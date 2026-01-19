@@ -427,10 +427,16 @@ const Reader: React.FC<ReaderProps> = ({
 
       <div ref={readerRef} onScroll={handleScroll} className={`flex-1 overflow-y-auto px-6 py-6 md:py-12 md:px-24 lg:px-48 xl:px-64 w-full scroll-smooth ${isAnimating ? 'pointer-events-none' : ''}`}>
         <div className={`relative transition-opacity duration-300 ${isAnimating ? 'opacity-20' : 'opacity-100'}`}>
-          <header className="mb-12 text-center max-w-4xl mx-auto">
-            <p className={`font-gentle text-xl md:text-2xl mb-6 tracking-wide ${isDark ? 'text-amber-400/80' : 'text-amber-700/80'}`}>{chapter.writer}</p>
-            <h1 className={`text-5xl md:text-6xl lg:text-7xl font-cursive font-normal mb-8 leading-[1.2] drop-shadow-md ${isDark ? 'text-stone-100' : 'text-stone-800'}`}>{chapter.title}</h1>
-            {chapter.subtitle && (<div className={`flex items-center justify-center gap-4 ${isDark ? 'text-stone-400' : 'text-stone-500'}`}><span className={`h-px w-8 ${isDark ? 'bg-stone-700' : 'bg-stone-300'}`}></span><p className="text-xl md:text-2xl font-gentle opacity-80">{chapter.subtitle}</p><span className={`h-px w-8 ${isDark ? 'bg-stone-700' : 'bg-stone-300'}`}></span></div>)}
+          <header className="mb-8 md:mb-12 text-center max-w-4xl mx-auto">
+            <p className={`font-gentle text-lg md:text-xl lg:text-2xl mb-4 md:mb-6 tracking-wide ${isDark ? 'text-amber-400/80' : 'text-amber-700/80'}`}>{chapter.writer}</p>
+            <h1 className={`text-3xl md:text-5xl lg:text-7xl font-cursive font-normal mb-6 md:mb-8 leading-[1.2] md:leading-[1.2] drop-shadow-md ${isDark ? 'text-stone-100' : 'text-stone-800'}`}>{chapter.title}</h1>
+            {chapter.subtitle && (
+              <div className={`flex items-center justify-center gap-3 md:gap-4 ${isDark ? 'text-stone-400' : 'text-stone-500'}`}>
+                <span className={`h-px w-6 md:w-8 ${isDark ? 'bg-stone-700' : 'bg-stone-300'}`}></span>
+                <p className="text-lg md:text-xl lg:text-2xl font-gentle opacity-80">{chapter.subtitle}</p>
+                <span className={`h-px w-6 md:w-8 ${isDark ? 'bg-stone-700' : 'bg-stone-300'}`}></span>
+              </div>
+            )}
           </header>
           <div className="max-w-3xl mx-auto mb-20"><MarkdownRenderer content={chapter.content} fontSize={theme.fontSize} themeMode={theme.mode} /></div>
           <nav className={`max-w-3xl mx-auto py-12 border-t flex justify-between items-center group ${isDark ? 'border-stone-800/50' : 'border-stone-200/50'}`}>

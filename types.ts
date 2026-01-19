@@ -28,3 +28,17 @@ export interface Theme {
   fontSize: number;
   rememberScroll?: boolean;
 }
+
+export interface Language {
+  code: string;
+  name: string;
+  gid: string;
+}
+
+export const LANGUAGES: Language[] = [
+  { code: 'bn', name: 'বাংলা', gid: '573962383' },
+  { code: 'en', name: 'English', gid: '1711803682' },
+  { code: 'hi', name: 'हिन्दी', gid: '1209961589' },
+  { code: 'as', name: 'অসমীয়া', gid: '54556265' },
+  { code: 'or', name: 'ଓଡ଼ିଆ', gid: '1435471202' },
+];

@@ -1,18 +1,30 @@
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { Chapter, ReadingState, Theme, Quote } from './types';
+import { Chapter, ReadingState, Theme, Quote, LANGUAGES, Language } from './types';
 import { fetchChapters } from './services/csvService';
 import Reader from './components/Reader';
 import Cover from './components/Cover';
+import TableOfContents from './components/TableOfContents';
+
+type View = 'cover' | 'index' | 'reader';
 
 const App: React.FC = () => {
   const [chapters, setChapters] = useState<Chapter[]>([]);
   const [loading, setLoading] = useState(true);
-  const [showCover, setShowCover] = useState(true);
+  const [view, setView] = useState<View>('cover');
   const [showSidebar, setShowSidebar] = useState(false);
   const [activeChapterIndex, setActiveChapterIndex] = useState(0);
   const [activeTab, setActiveTab] = useState<'all' | 'bookmarks' | 'quotes'>('all');
   
+  const [selectedLanguage, setSelectedLanguage] = useState<Language>(() => {
+    const saved = localStorage.getItem('thakur_selected_language');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      return LANGUAGES.find(l => l.code === parsed.code) || LANGUAGES[0];
+    }
+    return LANGUAGES[0]; // Default to Bengali
+  });
+
   const [readingState, setReadingState] = useState<ReadingState>(() => {
     const saved = localStorage.getItem('thakur_reading_state');
     return saved ? JSON.parse(saved) : { currentChapterId: null, bookmarks: [], progress: {}, quotes: [] };
@@ -27,23 +39,28 @@ const App: React.FC = () => {
     localStorage.setItem('thakur_theme_settings', JSON.stringify(theme));
   }, [theme]);
 
-  useEffect(() => {
-    const init = async () => {
-      const data = await fetchChapters();
-      setChapters(data);
-      
-      const savedState = localStorage.getItem('thakur_reading_state');
-      if (savedState) {
-        const state = JSON.parse(savedState);
-        const idx = data.findIndex(c => c.id === state.currentChapterId);
-        if (idx !== -1) {
-          setActiveChapterIndex(idx);
-        }
+  const loadChapters = useCallback(async (gid: string) => {
+    setLoading(true);
+    const data = await fetchChapters(gid);
+    setChapters(data);
+    
+    const savedState = localStorage.getItem('thakur_reading_state');
+    if (savedState) {
+      const state = JSON.parse(savedState);
+      const idx = data.findIndex(c => c.id === state.currentChapterId);
+      if (idx !== -1) {
+        setActiveChapterIndex(idx);
+      } else {
+        setActiveChapterIndex(0);
       }
-      setLoading(false);
-    };
-    init();
+    }
+    setLoading(false);
   }, []);
+
+  useEffect(() => {
+    loadChapters(selectedLanguage.gid);
+    localStorage.setItem('thakur_selected_language', JSON.stringify(selectedLanguage));
+  }, [selectedLanguage, loadChapters]);
 
   useEffect(() => {
     if (chapters.length > 0) {
@@ -61,6 +78,11 @@ const App: React.FC = () => {
         navigator.vibrate(duration);
       } catch (e) { }
     }
+  };
+
+  const handleLanguageChange = (lang: Language) => {
+    triggerHaptic(20);
+    setSelectedLanguage(lang);
   };
 
   const handleScrollUpdate = useCallback((percentage: number) => {
@@ -97,18 +119,22 @@ const App: React.FC = () => {
       chapterTitle: chapter.title,
       timestamp: Date.now()
     };
-    setReadingState(prev => ({
-      ...prev,
-      quotes: [newQuote, ...(prev.quotes || [])]
-    }));
+    setReadingState(prev => {
+      const updatedQuotes = [newQuote, ...(prev.quotes || [])];
+      const newState = { ...prev, quotes: updatedQuotes };
+      localStorage.setItem('thakur_reading_state', JSON.stringify(newState));
+      return newState;
+    });
   };
 
   const removeQuote = (quoteId: string) => {
     triggerHaptic(10);
-    setReadingState(prev => ({
-      ...prev,
-      quotes: prev.quotes.filter(q => q.id !== quoteId)
-    }));
+    setReadingState(prev => {
+      const updatedQuotes = prev.quotes.filter(q => q.id !== quoteId);
+      const newState = { ...prev, quotes: updatedQuotes };
+      localStorage.setItem('thakur_reading_state', JSON.stringify(newState));
+      return newState;
+    });
   };
 
   const handleShareChapter = async () => {
@@ -167,6 +193,7 @@ const App: React.FC = () => {
     triggerHaptic(10);
     setActiveChapterIndex(index);
     setShowSidebar(false);
+    setView('reader');
   };
 
   const goToChapterById = (id: string) => {
@@ -176,8 +203,8 @@ const App: React.FC = () => {
     }
   };
 
-  const handleOpenBook = () => setShowCover(false);
-  const handleCloseBook = () => { triggerHaptic(20); setShowCover(true); };
+  const handleOpenCover = () => setView('index');
+  const handleCloseBook = () => { triggerHaptic(20); setView('cover'); };
   const handleToggleSidebar = () => { triggerHaptic(10); setShowSidebar(!showSidebar); };
 
   const displayedChapters = useMemo(() => {
@@ -185,16 +212,26 @@ const App: React.FC = () => {
     return chapters;
   }, [chapters, activeTab, readingState.bookmarks]);
 
-  if (loading) {
-    return (
-      <div className="h-screen w-full flex flex-col items-center justify-center bg-[#fcfaf2] paper-texture">
-        <div className="w-20 h-20 border-t-2 border-amber-800 rounded-full animate-spin"></div>
-        <h2 className="mt-8 text-2xl font-gentle text-stone-600 animate-pulse italic">লোড হচ্ছে...</h2>
-      </div>
-    );
-  }
+  if (view === 'cover') return (
+    <Cover 
+      onOpen={handleOpenCover} 
+      selectedLanguage={selectedLanguage} 
+      onLanguageChange={handleLanguageChange} 
+    />
+  );
 
-  if (showCover) return <Cover onOpen={handleOpenBook} />;
+  if (view === 'index') return (
+    <TableOfContents 
+      chapters={chapters} 
+      bookmarks={readingState.bookmarks}
+      quotes={readingState.quotes || []}
+      onSelect={goToChapter} 
+      onBack={handleCloseBook}
+      onRemoveQuote={removeQuote}
+      onGoToChapterById={goToChapterById}
+      theme={theme}
+    />
+  );
 
   const currentChapter = chapters[activeChapterIndex];
   const progressPercent = chapters.length > 0 ? ((activeChapterIndex + 1) / chapters.length) * 100 : 0;
@@ -211,8 +248,8 @@ const App: React.FC = () => {
           <button onClick={handleToggleSidebar} className="p-2 hover:bg-black/5 rounded-full" aria-label="Menu">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
           </button>
-          <button onClick={handleCloseBook} className="p-2 hover:bg-black/5 rounded-full" aria-label="Home">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          <button onClick={() => setView('index')} className="p-2 hover:bg-black/5 rounded-full" aria-label="Home">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
           </button>
         </div>
         
@@ -309,7 +346,7 @@ const App: React.FC = () => {
                 <button onClick={() => setTheme(p => ({...p, fontSize: Math.min(32, p.fontSize + 2)}))} className="text-lg font-bold text-stone-500">A+</button>
               </div>
             </div>
-            <button onClick={handleCloseBook} className="w-full text-center py-2 text-stone-500 text-xs font-gentle border border-stone-200 rounded-lg hover:bg-white transition-colors">প্রচ্ছদ পাতায় ফিরুন</button>
+            <button onClick={() => setView('index')} className="w-full text-center py-2 text-stone-500 text-xs font-gentle border border-stone-200 rounded-lg hover:bg-white transition-colors">সুচীপত্র দেখুন</button>
           </div>
         </div>
       </aside>

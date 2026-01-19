@@ -31,7 +31,7 @@ const Cover: React.FC<CoverProps> = ({ onOpen, selectedLanguage, onLanguageChang
     }, 1200);
   };
 
-  const portraitUrl = "https://images.canvas.com/67ac68420917244903df3d5f/67ac68420917244903df3d5f.jpg";
+  const portraitUrl = "/images/cover.jpg";
   const fallbackUrl = "https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&q=80&w=600";
 
   return (
@@ -88,7 +88,7 @@ const Cover: React.FC<CoverProps> = ({ onOpen, selectedLanguage, onLanguageChang
 
             {/* Framed Portrait Area */}
             <div className="relative flex flex-col items-center z-10 w-full px-4 flex-1 justify-center my-3 md:my-4">
-              <div className="relative w-full max-w-[180px] md:max-w-[260px] aspect-[4/5] overflow-hidden rounded-sm shadow-[0_0_30px_rgba(0,0,0,0.7)] border-4 border-double border-amber-600/50 bg-[#1e1e1e]">
+              <div className="relative w-full max-w-[220px] md:max-w-[260px] aspect-square overflow-hidden rounded-sm shadow-[0_0_30px_rgba(0,0,0,0.7)] border-4 border-double border-amber-600/50 bg-[#1e1e1e]">
                 <img
                   src={imgError ? fallbackUrl : portraitUrl}
                   className="w-full h-full object-cover transition-all duration-700 brightness-95 contrast-105 scale-110 origin-center"

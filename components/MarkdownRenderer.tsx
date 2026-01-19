@@ -9,8 +9,10 @@ interface MarkdownRendererProps {
 
 const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content, fontSize, themeMode }) => {
   // Keywords to detect the start of Translator's Notes across supported languages
+  // Keywords to detect the start of Translator's Notes across supported languages
   const noteKeywords = [
     "Translator's Note", "Translator's Notes", "Translators Note",
+    "Translator’s Note", "Translator’s Notes", // Smart apostrophe support
     "অনুবাদকের নোট", "অনুবাদকের কথা", "অনুবাদকের মন্তব্য",
     "अनुवादक की टिप्पणी", "अनुवादक का नोट",
     "অনুবাদকৰ টোকা", "অনুবাদকৰ কথা",
@@ -24,7 +26,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content, fontSize, 
   };
 
   const allLines = content.split('\n').filter(p => p.trim() !== '');
-  
+
   // Find where the translator notes start
   let notesStartIndex = -1;
   for (let i = 0; i < allLines.length; i++) {
@@ -55,8 +57,8 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content, fontSize, 
     // 2. Blockquotes
     if (trimmed.startsWith('> ')) {
       return (
-        <blockquote 
-          key={idx} 
+        <blockquote
+          key={idx}
           className="my-8 pl-6 pr-4 py-4 border-l-4 border-amber-600 bg-amber-50/30 dark:bg-amber-900/10 italic font-book rounded-r-lg shadow-sm"
           dangerouslySetInnerHTML={{ __html: parseInline(trimmed.slice(2)) }}
         />
@@ -66,8 +68,8 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content, fontSize, 
     // 3. List Items
     if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
       return (
-        <li 
-          key={idx} 
+        <li
+          key={idx}
           className="mb-4 ml-8 list-disc opacity-90 font-book marker:text-amber-600"
           dangerouslySetInnerHTML={{ __html: parseInline(trimmed.substring(2)) }}
         />
@@ -79,8 +81,8 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content, fontSize, 
     if (isFirstText) foundFirstTextParagraph = true;
 
     return (
-      <p 
-        key={idx} 
+      <p
+        key={idx}
         className={`mb-6 relative group font-book leading-relaxed ${isFirstText ? 'bangla-dropcap' : ''} ${isInsideNote ? 'italic text-stone-600 dark:text-stone-400 opacity-90' : ''}`}
         dangerouslySetInnerHTML={{ __html: parseInline(trimmed) }}
       />
@@ -88,9 +90,9 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content, fontSize, 
   };
 
   return (
-    <div 
-      style={{ fontSize: `${fontSize}px`, fontFamily: "'Tiro Bangla', serif" }} 
-      className={`prose max-w-none tracking-normal text-justify selection:bg-amber-200
+    <div
+      style={{ fontSize: `${fontSize}px`, fontFamily: "'Tiro Bangla', serif" }}
+      className={`prose max-w-none tracking-normal text-left selection:bg-amber-200
         ${themeMode === 'dark' ? 'prose-invert text-slate-300' : 'text-slate-900'}
       `}
     >
@@ -101,21 +103,21 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content, fontSize, 
 
       {/* Translator Notes Section */}
       {noteLines.length > 0 && (
-        <div 
+        <div
           className={`mt-16 p-6 md:p-10 rounded-3xl border border-dashed relative transition-all duration-500 shadow-inner
-            ${themeMode === 'dark' 
-              ? 'bg-[#121416] border-slate-800 text-slate-400' 
-              : themeMode === 'sepia' 
-                ? 'bg-[#f4ebd0] border-amber-300/50 text-stone-700' 
+            ${themeMode === 'dark'
+              ? 'bg-[#121416] border-slate-800 text-slate-400'
+              : themeMode === 'sepia'
+                ? 'bg-[#f4ebd0] border-amber-300/50 text-stone-700'
                 : 'bg-stone-50 border-stone-200 text-stone-600'
             }`}
-          style={{ fontSize: `${fontSize * 0.85}px` }}
+          style={{ fontSize: `${fontSize * 0.75}px`, lineHeight: '1.6' }}
         >
           {/* Decorative Label */}
           <div className={`absolute -top-3 left-8 px-4 py-0.5 rounded-full text-[10px] uppercase tracking-[0.2em] font-bold border
             ${themeMode === 'dark' ? 'bg-slate-800 border-slate-700 text-amber-500' : 'bg-amber-100 border-amber-200 text-amber-900'}
           `}>
-             নোটস (Notes)
+            নোটস (Notes)
           </div>
 
           {/* Decorative Icon */}
@@ -129,7 +131,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content, fontSize, 
           <div className="pt-2">
             {noteLines.map((line, idx) => renderParagraph(line.trim(), idx + 1000, true))}
           </div>
-          
+
           <div className="mt-4 pt-4 border-t border-dashed border-current opacity-20 flex justify-center">
             <img src="https://www.svgrepo.com/show/338902/ornament.svg" className="w-8 h-8 ornament grayscale opacity-50" alt="deco" />
           </div>

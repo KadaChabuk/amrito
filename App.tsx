@@ -5,6 +5,7 @@ import { fetchChapters } from './services/csvService';
 import Reader from './components/Reader';
 import Cover from './components/Cover';
 import TableOfContents from './components/TableOfContents';
+import LoadingScreen from './components/LoadingScreen';
 
 type View = 'cover' | 'index' | 'reader';
 
@@ -15,7 +16,7 @@ const App: React.FC = () => {
   const [showSidebar, setShowSidebar] = useState(false);
   const [activeChapterIndex, setActiveChapterIndex] = useState(0);
   const [activeTab, setActiveTab] = useState<'all' | 'bookmarks' | 'quotes'>('all');
-  
+
   const [selectedLanguage, setSelectedLanguage] = useState<Language>(() => {
     const saved = localStorage.getItem('thakur_selected_language');
     if (saved) {
@@ -29,7 +30,7 @@ const App: React.FC = () => {
     const saved = localStorage.getItem('thakur_reading_state');
     return saved ? JSON.parse(saved) : { currentChapterId: null, bookmarks: [], progress: {}, quotes: [] };
   });
-  
+
   const [theme, setTheme] = useState<Theme>(() => {
     const saved = localStorage.getItem('thakur_theme_settings');
     return saved ? JSON.parse(saved) : { mode: 'sepia', fontSize: 20, rememberScroll: true };
@@ -43,7 +44,7 @@ const App: React.FC = () => {
     setLoading(true);
     const data = await fetchChapters(gid);
     setChapters(data);
-    
+
     const savedState = localStorage.getItem('thakur_reading_state');
     if (savedState) {
       const state = JSON.parse(savedState);
@@ -143,7 +144,7 @@ const App: React.FC = () => {
     const chapter = chapters[activeChapterIndex];
     const bookTitle = "শ্রীশ্রীবালক ব্রহ্মচারীর শৈশব কাহিনী";
     const formattedText = `📜 *${bookTitle}*\n📖 অধ্যায়: *${chapter.title}*\n\n— শ্রীশ্রীবালক ব্রহ্মচারী ডিজিটাল সংকলন থেকে পড়ুন।`;
-    
+
     if (navigator.share) {
       try {
         await navigator.share({
@@ -162,7 +163,7 @@ const App: React.FC = () => {
     triggerHaptic(15);
     const bookTitle = "শ্রীশ্রীবালক ব্রহ্মচারীর শৈশব কাহিনী";
     const formattedText = `📜 *${bookTitle}*\n📖 অধ্যায়: *${quote.chapterTitle}*\n\n「 ${quote.text} 」\n\n— শ্রীশ্রীবালক ব্রহ্মচারী ডিজিটাল সংকলন`;
-    
+
     if (navigator.share) {
       try {
         await navigator.share({
@@ -212,20 +213,22 @@ const App: React.FC = () => {
     return chapters;
   }, [chapters, activeTab, readingState.bookmarks]);
 
+  if (loading) return <LoadingScreen />;
+
   if (view === 'cover') return (
-    <Cover 
-      onOpen={handleOpenCover} 
-      selectedLanguage={selectedLanguage} 
-      onLanguageChange={handleLanguageChange} 
+    <Cover
+      onOpen={handleOpenCover}
+      selectedLanguage={selectedLanguage}
+      onLanguageChange={handleLanguageChange}
     />
   );
 
   if (view === 'index') return (
-    <TableOfContents 
-      chapters={chapters} 
+    <TableOfContents
+      chapters={chapters}
       bookmarks={readingState.bookmarks}
       quotes={readingState.quotes || []}
-      onSelect={goToChapter} 
+      onSelect={goToChapter}
       onBack={handleCloseBook}
       onRemoveQuote={removeQuote}
       onGoToChapterById={goToChapterById}
@@ -240,27 +243,27 @@ const App: React.FC = () => {
 
   return (
     <div className={`h-screen flex flex-col md:flex-row overflow-hidden font-['Hind_Siliguri'] selection:bg-amber-200 reader-fade-in ${isDark ? 'bg-[#1a1c1e]' : 'bg-stone-50'}`}>
-      
+
       {/* Mobile AppBar */}
       <div className={`md:hidden flex items-center justify-between px-3 h-16 border-b z-30 shadow-sm backdrop-blur-md sticky top-0
         ${isDark ? 'bg-[#1a1c1e]/90 border-stone-800 text-stone-100' : 'bg-white/90 border-stone-200 text-stone-800'}`}>
         <div className="flex items-center gap-1">
           <button onClick={handleToggleSidebar} className="p-2 hover:bg-black/5 rounded-full" aria-label="Menu">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="4" x2="20" y1="12" y2="12" /><line x1="4" x2="20" y1="6" y2="6" /><line x1="4" x2="20" y1="18" y2="18" /></svg>
           </button>
           <button onClick={() => setView('index')} className="p-2 hover:bg-black/5 rounded-full" aria-label="Home">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" /><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" /></svg>
           </button>
         </div>
-        
+
         <span className="font-cursive font-normal text-2xl truncate px-2 text-center flex-1 mt-1">{currentChapter?.title || 'বাল্যলীলা কথা'}</span>
-        
+
         <div className="flex items-center gap-1">
           <button onClick={handleShareChapter} className="p-2 opacity-60 hover:opacity-100 transition-opacity" aria-label="Share">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" /><polyline points="16 6 12 2 8 6" /><line x1="12" y1="2" x2="12" y2="15" /></svg>
           </button>
           <button onClick={toggleBookmark} className={`p-2 transition-all transform active:scale-90 ${isBookmarked ? 'text-amber-500' : 'opacity-40'}`} aria-label="Bookmark">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill={isBookmarked ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill={isBookmarked ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z" /></svg>
           </button>
         </div>
       </div>
@@ -270,80 +273,80 @@ const App: React.FC = () => {
         <div className="flex flex-col h-full">
           <div className="p-8 border-b border-stone-200/50 bg-white/50 backdrop-blur-sm">
             <h2 className="text-3xl font-cursive font-normal text-stone-800 mb-6 leading-tight">শ্রীশ্রীবালক ব্রহ্মচারীর শৈশব কাহিনী</h2>
-            
+
             {/* Tab Navigation */}
             <div className="flex p-1 bg-stone-100 rounded-lg">
-                <button onClick={() => { triggerHaptic(5); setActiveTab('all'); }} className={`flex-1 py-1.5 text-xs font-gentle rounded-md transition-all ${activeTab === 'all' ? 'bg-white text-stone-900 shadow-sm' : 'text-stone-500 hover:text-stone-700'}`}>সুচী</button>
-                <button onClick={() => { triggerHaptic(5); setActiveTab('bookmarks'); }} className={`flex-1 py-1.5 text-xs font-gentle rounded-md transition-all ${activeTab === 'bookmarks' ? 'bg-white text-stone-900 shadow-sm' : 'text-stone-500 hover:text-stone-700'}`}>বুকমার্ক</button>
-                <button onClick={() => { triggerHaptic(5); setActiveTab('quotes'); }} className={`flex-1 py-1.5 text-xs font-gentle rounded-md transition-all ${activeTab === 'quotes' ? 'bg-white text-stone-900 shadow-sm' : 'text-stone-500 hover:text-stone-700'}`}>উদ্ধৃতি</button>
+              <button onClick={() => { triggerHaptic(5); setActiveTab('all'); }} className={`flex-1 py-1.5 text-xs font-gentle rounded-md transition-all ${activeTab === 'all' ? 'bg-white text-stone-900 shadow-sm' : 'text-stone-500 hover:text-stone-700'}`}>সুচী</button>
+              <button onClick={() => { triggerHaptic(5); setActiveTab('bookmarks'); }} className={`flex-1 py-1.5 text-xs font-gentle rounded-md transition-all ${activeTab === 'bookmarks' ? 'bg-white text-stone-900 shadow-sm' : 'text-stone-500 hover:text-stone-700'}`}>বুকমার্ক</button>
+              <button onClick={() => { triggerHaptic(5); setActiveTab('quotes'); }} className={`flex-1 py-1.5 text-xs font-gentle rounded-md transition-all ${activeTab === 'quotes' ? 'bg-white text-stone-900 shadow-sm' : 'text-stone-500 hover:text-stone-700'}`}>উদ্ধৃতি</button>
             </div>
           </div>
-          
+
           <div className="flex-1 overflow-y-auto px-4 py-6 space-y-2 custom-scrollbar">
             {activeTab === 'quotes' ? (
-                readingState.quotes && readingState.quotes.length > 0 ? (
-                    readingState.quotes.map(quote => (
-                        <div key={quote.id} className="p-5 rounded-xl bg-white border border-stone-100 shadow-sm relative group mb-4 transition-all hover:shadow-md">
-                            <div className="flex justify-between items-start gap-2 mb-3">
-                                <p className="font-book text-sm text-stone-800 leading-relaxed italic">"{quote.text}"</p>
-                                <div className="flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <button 
-                                        onClick={() => handleShareQuote(quote)} 
-                                        className="p-1.5 bg-stone-50 rounded-lg text-stone-400 hover:text-amber-700 hover:bg-amber-50 transition-all"
-                                        title="Share Quote"
-                                    >
-                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
-                                    </button>
-                                    <button 
-                                        onClick={() => removeQuote(quote.id)} 
-                                        className="p-1.5 bg-stone-50 rounded-lg text-stone-400 hover:text-red-500 hover:bg-red-50 transition-all"
-                                        title="Remove Quote"
-                                    >
-                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-                                    </button>
-                                </div>
-                            </div>
-                            <button onClick={() => goToChapterById(quote.chapterId)} className="text-[10px] font-gentle text-amber-700 hover:underline inline-flex items-center gap-1">
-                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-                                § {quote.chapterTitle}
-                            </button>
-                        </div>
-                    ))
-                ) : (
-                    <div className="py-12 px-6 text-center text-stone-400 font-book italic">কোনো উদ্ধৃতি সংরক্ষণ করা হয়নি।</div>
-                )
-            ) : (
-                displayedChapters.length > 0 ? displayedChapters.map((ch) => {
-                    const globalIndex = chapters.findIndex(c => c.id === ch.id);
-                    return (
-                        <button key={ch.id} onClick={() => goToChapter(globalIndex)} className={`w-full text-left px-5 py-3 rounded-xl transition-all flex items-start gap-4 group relative ${activeChapterIndex === globalIndex ? 'bg-amber-100/60 text-amber-950 shadow-sm' : 'hover:bg-stone-200/30 text-stone-600 hover:text-stone-900'}`}>
-                            <div className={`mt-2.5 w-1.5 h-1.5 rounded-full transition-colors flex-shrink-0 ${activeChapterIndex === globalIndex ? 'bg-amber-700' : 'bg-stone-300'}`}></div>
-                            <div className="flex-1">
-                                <h3 className={`font-cursive text-xl leading-snug ${activeChapterIndex === globalIndex ? 'font-normal opacity-100' : 'opacity-70'}`}>{ch.title}</h3>
-                                <div className="flex items-center gap-2 mt-0.5">
-                                    <span className="text-xs font-gentle opacity-60">{ch.writer}</span>
-                                    {readingState.bookmarks.includes(ch.id) && <svg width="10" height="10" viewBox="0 0 24 24" fill="#b45309" className="opacity-80"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>}
-                                </div>
-                            </div>
+              readingState.quotes && readingState.quotes.length > 0 ? (
+                readingState.quotes.map(quote => (
+                  <div key={quote.id} className="p-5 rounded-xl bg-white border border-stone-100 shadow-sm relative group mb-4 transition-all hover:shadow-md">
+                    <div className="flex justify-between items-start gap-2 mb-3">
+                      <p className="font-book text-sm text-stone-800 leading-relaxed italic">"{quote.text}"</p>
+                      <div className="flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button
+                          onClick={() => handleShareQuote(quote)}
+                          className="p-1.5 bg-stone-50 rounded-lg text-stone-400 hover:text-amber-700 hover:bg-amber-50 transition-all"
+                          title="Share Quote"
+                        >
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" /><polyline points="16 6 12 2 8 6" /><line x1="12" y1="2" x2="12" y2="15" /></svg>
                         </button>
-                    );
-                }) : (
-                    <div className="py-12 px-6 text-center text-stone-400 font-book italic">কোনো অধ্যায় খুঁজে পাওয়া যায়নি।</div>
-                )
+                        <button
+                          onClick={() => removeQuote(quote.id)}
+                          className="p-1.5 bg-stone-50 rounded-lg text-stone-400 hover:text-red-500 hover:bg-red-50 transition-all"
+                          title="Remove Quote"
+                        >
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 6h18" /><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" /></svg>
+                        </button>
+                      </div>
+                    </div>
+                    <button onClick={() => goToChapterById(quote.chapterId)} className="text-[10px] font-gentle text-amber-700 hover:underline inline-flex items-center gap-1">
+                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" /><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" /></svg>
+                      § {quote.chapterTitle}
+                    </button>
+                  </div>
+                ))
+              ) : (
+                <div className="py-12 px-6 text-center text-stone-400 font-book italic">কোনো উদ্ধৃতি সংরক্ষণ করা হয়নি।</div>
+              )
+            ) : (
+              displayedChapters.length > 0 ? displayedChapters.map((ch) => {
+                const globalIndex = chapters.findIndex(c => c.id === ch.id);
+                return (
+                  <button key={ch.id} onClick={() => goToChapter(globalIndex)} className={`w-full text-left px-5 py-3 rounded-xl transition-all flex items-start gap-4 group relative ${activeChapterIndex === globalIndex ? 'bg-amber-100/60 text-amber-950 shadow-sm' : 'hover:bg-stone-200/30 text-stone-600 hover:text-stone-900'}`}>
+                    <div className={`mt-2.5 w-1.5 h-1.5 rounded-full transition-colors flex-shrink-0 ${activeChapterIndex === globalIndex ? 'bg-amber-700' : 'bg-stone-300'}`}></div>
+                    <div className="flex-1">
+                      <h3 className={`font-cursive text-xl leading-snug ${activeChapterIndex === globalIndex ? 'font-normal opacity-100' : 'opacity-70'}`}>{ch.title}</h3>
+                      <div className="flex items-center gap-2 mt-0.5">
+                        <span className="text-xs font-gentle opacity-60">{ch.writer}</span>
+                        {readingState.bookmarks.includes(ch.id) && <svg width="10" height="10" viewBox="0 0 24 24" fill="#b45309" className="opacity-80"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z" /></svg>}
+                      </div>
+                    </div>
+                  </button>
+                );
+              }) : (
+                <div className="py-12 px-6 text-center text-stone-400 font-book italic">কোনো অধ্যায় খুঁজে পাওয়া যায়নি।</div>
+              )
             )}
           </div>
 
           <div className="p-6 bg-stone-100/50 border-t border-stone-200/50">
             <div className="flex justify-between items-center mb-6 px-4">
               <div className="flex gap-4">
-                <button onClick={() => setTheme(p => ({...p, mode: 'light'}))} className={`w-6 h-6 rounded-full border-2 ${theme.mode === 'light' ? 'border-amber-600' : 'border-stone-300'} bg-white`} />
-                <button onClick={() => setTheme(p => ({...p, mode: 'sepia'}))} className={`w-6 h-6 rounded-full border-2 ${theme.mode === 'sepia' ? 'border-amber-600' : 'border-stone-300'} bg-[#fcf5e5]`} />
-                <button onClick={() => setTheme(p => ({...p, mode: 'dark'}))} className={`w-6 h-6 rounded-full border-2 ${theme.mode === 'dark' ? 'border-amber-600' : 'border-stone-300'} bg-[#1a1c1e]`} />
+                <button onClick={() => setTheme(p => ({ ...p, mode: 'light' }))} className={`w-6 h-6 rounded-full border-2 ${theme.mode === 'light' ? 'border-amber-600' : 'border-stone-300'} bg-white`} />
+                <button onClick={() => setTheme(p => ({ ...p, mode: 'sepia' }))} className={`w-6 h-6 rounded-full border-2 ${theme.mode === 'sepia' ? 'border-amber-600' : 'border-stone-300'} bg-[#fcf5e5]`} />
+                <button onClick={() => setTheme(p => ({ ...p, mode: 'dark' }))} className={`w-6 h-6 rounded-full border-2 ${theme.mode === 'dark' ? 'border-amber-600' : 'border-stone-300'} bg-[#1a1c1e]`} />
               </div>
               <div className="flex items-center gap-4 bg-stone-200/50 rounded-full px-4 py-1">
-                <button onClick={() => setTheme(p => ({...p, fontSize: Math.max(16, p.fontSize - 2)}))} className="text-lg font-bold text-stone-500">A-</button>
+                <button onClick={() => setTheme(p => ({ ...p, fontSize: Math.max(16, p.fontSize - 2) }))} className="text-lg font-bold text-stone-500">A-</button>
                 <span className="h-3 w-px bg-stone-300"></span>
-                <button onClick={() => setTheme(p => ({...p, fontSize: Math.min(32, p.fontSize + 2)}))} className="text-lg font-bold text-stone-500">A+</button>
+                <button onClick={() => setTheme(p => ({ ...p, fontSize: Math.min(32, p.fontSize + 2) }))} className="text-lg font-bold text-stone-500">A+</button>
               </div>
             </div>
             <button onClick={() => setView('index')} className="w-full text-center py-2 text-stone-500 text-xs font-gentle border border-stone-200 rounded-lg hover:bg-white transition-colors">সুচীপত্র দেখুন</button>
@@ -355,7 +358,7 @@ const App: React.FC = () => {
         {showSidebar && <div className="fixed inset-0 bg-stone-900/40 backdrop-blur-sm z-30 md:hidden" onClick={() => setShowSidebar(false)} />}
         <div className="flex-1 overflow-hidden">
           {currentChapter && (
-            <Reader 
+            <Reader
               chapter={currentChapter}
               onNext={handleNext}
               onPrev={handlePrev}

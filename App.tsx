@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Chapter, ReadingState, Theme, Quote, LANGUAGES, Language } from './types';
 import { fetchChapters } from './services/csvService';
+import { getTranslation } from './translations';
 import Reader from './components/Reader';
 import Cover from './components/Cover';
 import TableOfContents from './components/TableOfContents';
@@ -213,7 +214,7 @@ const App: React.FC = () => {
     return chapters;
   }, [chapters, activeTab, readingState.bookmarks]);
 
-  if (loading) return <LoadingScreen />;
+  if (loading) return <LoadingScreen selectedLanguage={selectedLanguage} />;
 
   if (view === 'cover') return (
     <Cover
@@ -233,6 +234,7 @@ const App: React.FC = () => {
       onRemoveQuote={removeQuote}
       onGoToChapterById={goToChapterById}
       theme={theme}
+      selectedLanguage={selectedLanguage}
     />
   );
 
@@ -240,6 +242,7 @@ const App: React.FC = () => {
   const progressPercent = chapters.length > 0 ? ((activeChapterIndex + 1) / chapters.length) * 100 : 0;
   const isBookmarked = currentChapter ? readingState.bookmarks.includes(currentChapter.id) : false;
   const isDark = theme.mode === 'dark';
+  const t = getTranslation(selectedLanguage.code);
 
   return (
     <div className={`h-screen flex flex-col md:flex-row overflow-hidden font-['Hind_Siliguri'] selection:bg-amber-200 reader-fade-in ${isDark ? 'bg-[#1a1c1e]' : 'bg-stone-50'}`}>
@@ -273,8 +276,8 @@ const App: React.FC = () => {
         <div className="flex flex-col h-full">
           <div className="p-8 border-b border-stone-200/50 bg-white/50 backdrop-blur-sm">
             <div className="flex flex-col items-start gap-1 mb-6">
-              <span className="text-sm font-gentle text-stone-500">শ্রীশ্রীবালক ব্রহ্মচারীর</span>
-              <h2 className="text-3xl font-cursive font-normal text-stone-800 leading-tight">শৈশব কাহিনী</h2>
+              <span className="text-sm font-gentle text-stone-500">{t.titlePrefix}</span>
+              <h2 className="text-3xl font-cursive font-normal text-stone-800 leading-tight">{t.titleMain}</h2>
             </div>
 
             {/* Tab Navigation */}

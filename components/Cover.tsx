@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { LANGUAGES, Language } from '../types';
+import { getTranslation } from '../translations';
 
 interface CoverProps {
   onOpen: () => void;
@@ -13,6 +14,7 @@ const Cover: React.FC<CoverProps> = ({ onOpen, selectedLanguage, onLanguageChang
   const [isMounted, setIsMounted] = useState(false);
   const [isExiting, setIsExiting] = useState(false);
   const [imgError, setImgError] = useState(false);
+  const t = getTranslation(selectedLanguage.code);
 
   useEffect(() => {
     const timer = setTimeout(() => setIsMounted(true), 50);
@@ -49,8 +51,8 @@ const Cover: React.FC<CoverProps> = ({ onOpen, selectedLanguage, onLanguageChang
           <div className="h-full py-12 flex flex-col items-center justify-between pointer-events-none select-none">
             <div className="w-full h-0.5 bg-amber-600/30"></div>
             <div className="flex flex-col items-center gap-2" style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}>
-              <span className="gold-text font-book font-medium text-[8px] md:text-[10px] tracking-[0.15em] opacity-80">শ্রীশ্রীবালক ব্রহ্মচারীর</span>
-              <span className="gold-text font-cursive font-bold text-[12px] md:text-lg tracking-wide">শৈশব কাহিনী</span>
+              <span className="gold-text font-book font-medium text-[8px] md:text-[10px] tracking-[0.15em] opacity-80">{t.titlePrefix}</span>
+              <span className="gold-text font-cursive font-bold text-[12px] md:text-lg tracking-wide">{t.titleMain}</span>
             </div>
             <div className="w-full h-0.5 bg-amber-600/30"></div>
           </div>
@@ -61,26 +63,25 @@ const Cover: React.FC<CoverProps> = ({ onOpen, selectedLanguage, onLanguageChang
           {/* Internal Page (Visible when cover opens) */}
           <div className="absolute inset-0 bg-[#fdfaf1] shadow-2xl rounded-r-sm p-8 flex flex-col justify-center items-center text-center paper-texture border-l border-stone-300">
             <h1 className="flex flex-col items-center gap-1 text-stone-800 leading-tight">
-              <span className="font-gentle text-base md:text-lg opacity-80">শ্রীশ্রীবালক ব্রহ্মচারীর</span>
-              <span className="text-3xl md:text-5xl font-cursive text-amber-900">শৈশব কাহিনী</span>
+              <span className="font-gentle text-base md:text-lg opacity-80">{t.titlePrefix}</span>
+              <span className={`text-3xl ${selectedLanguage.code === 'hi' ? 'md:text-4xl' : 'md:text-5xl'} font-cursive text-amber-900`}>{t.titleMain}</span>
             </h1>
             <div className="mt-8 w-12 h-px bg-amber-200"></div>
           </div>
 
           <div
             onClick={!isOpen ? handleOpen : undefined}
-            className={`book-cover absolute inset-0 rounded-r-sm shadow-[15px_5px_40px_rgba(0,0,0,0.8)] leather-texture flex flex-col items-center justify-between p-4 md:p-8 border-l border-black/50 ${isOpen ? 'open' : ''}`}
+            className={`book-cover absolute inset-0 rounded-r-sm shadow-[15px_5px_40px_rgba(0,0,0,0.8)] leather-texture flex flex-col items-center justify-between p-4 md:p-8 border-l border-black/50 overflow-hidden ${isOpen ? 'open' : ''}`}
             style={{ zIndex: isOpen ? 40 : 50, boxShadow: isOpen ? 'none' : '20px 10px 50px rgba(0,0,0,0.8)' }}
           >
             <div className="absolute inset-3 md:inset-4 border-2 border-amber-600/30 rounded pointer-events-none"></div>
 
             {/* Title Area */}
             <div className="mt-4 md:mt-6 text-center z-10 pointer-events-none select-none">
-              <p className="text-amber-500/60 font-book tracking-[0.2em] uppercase text-[8px] md:text-[9px] mb-2 md:mb-4 opacity-70">শ্রীশ্রীবালক ব্রহ্মচারী সেবা প্রতিষ্ঠান</p>
               <div className="flex flex-col items-center">
-                <span className="text-base md:text-xl lg:text-2xl font-gentle gold-text opacity-90 mb-1">শ্রীশ্রীবালক ব্রহ্মচারীর</span>
-                <h1 className="text-4xl md:text-6xl lg:text-7xl font-cursive font-bold gold-text leading-snug pt-2 px-2 filter drop-shadow-[0_4px_4px_rgba(0,0,0,0.5)]">
-                  শৈশব কাহিনী
+                <span className="text-base md:text-lg lg:text-xl font-gentle gold-text opacity-90 mb-1 tracking-wide">{t.titlePrefix}</span>
+                <h1 className={`text-4xl ${selectedLanguage.code === 'hi' ? 'md:text-4xl' : 'md:text-5xl'} font-cursive font-bold gold-text leading-snug pt-2 px-2 filter drop-shadow-[0_4px_4px_rgba(0,0,0,0.5)] whitespace-nowrap overflow-hidden text-ellipsis max-w-full`}>
+                  {t.titleMain}
                 </h1>
               </div>
             </div>
@@ -102,13 +103,13 @@ const Cover: React.FC<CoverProps> = ({ onOpen, selectedLanguage, onLanguageChang
 
             {/* Language Selection UI */}
             <div className={`z-20 transition-opacity duration-300 w-full ${isOpen ? 'opacity-0' : 'opacity-100'}`} onClick={(e) => e.stopPropagation()}>
-              <p className="text-amber-500/40 text-[9px] md:text-[10px] uppercase tracking-widest text-center mb-2 md:mb-3 font-book">ভাষা নির্বাচন করুন</p>
+              <p className="text-amber-500/40 text-[9px] md:text-[10px] uppercase tracking-widest text-center mb-2 md:mb-3 font-book">{t.selectLanguage}</p>
               <div className="flex flex-wrap justify-center gap-1.5 md:gap-3 px-1 md:px-2">
                 {LANGUAGES.map((lang) => (
                   <button
                     key={lang.code}
                     onClick={() => onLanguageChange(lang)}
-                    className={`px-2 md:px-3 py-1 md:py-1.5 rounded-sm text-[10px] md:text-xs font-book transition-all duration-300 border ${selectedLanguage.code === lang.code
+                    className={`px-2 md:px-3 py-1 md:py-1.5 rounded-sm text-[10px] md:text-xs font-book transition-all duration-300 border whitespace-nowrap ${selectedLanguage.code === lang.code
                       ? 'bg-amber-600/20 border-amber-500 gold-text shadow-[0_0_8px_rgba(180,83,9,0.3)]'
                       : 'bg-black/20 border-amber-900/40 text-amber-900/60 hover:border-amber-700 hover:text-amber-600'
                       }`}
@@ -120,14 +121,14 @@ const Cover: React.FC<CoverProps> = ({ onOpen, selectedLanguage, onLanguageChang
             </div>
 
             {/* Footer Area */}
-            <div className="flex flex-col items-center z-10 mb-2 md:mb-4 pointer-events-none select-none">
+            <div className="flex flex-col items-center z-10 mb-2 md:mb-4 pointer-events-none select-none w-full px-4 text-center">
               <div className="h-px w-16 md:w-24 bg-gradient-to-r from-transparent via-amber-600/50 to-transparent mb-2 md:mb-3"></div>
-              <p className="text-amber-500/70 font-book italic tracking-widest text-[8px] md:text-[9px] uppercase">সংগ্রহ ও সম্পাদনা</p>
+              <p className="text-amber-500/70 font-book italic tracking-widest text-[8px] md:text-[9px] uppercase max-w-full overflow-hidden text-ellipsis whitespace-nowrap">{t.collectionEdit}</p>
             </div>
 
             {/* Touch Hint */}
             <div className={`absolute bottom-3 md:bottom-6 text-amber-600/30 text-[8px] md:text-[9px] tracking-[0.4em] font-sans transition-opacity duration-300 ${isOpen ? 'opacity-0' : 'animate-pulse opacity-100'}`}>
-              TOUCH TO OPEN
+              {t.touchToOpen}
             </div>
           </div>
         </div>

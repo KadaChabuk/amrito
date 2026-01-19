@@ -1,6 +1,14 @@
 import React from 'react';
+import { Language } from '../types';
+import { getTranslation } from '../translations';
 
-const LoadingScreen: React.FC = () => {
+interface LoadingScreenProps {
+    selectedLanguage: Language;
+}
+
+const LoadingScreen: React.FC<LoadingScreenProps> = ({ selectedLanguage }) => {
+    const t = getTranslation(selectedLanguage.code);
+
     return (
         <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#fdfaf1] transition-opacity duration-1000">
             {/* 3D Book Animation */}
@@ -14,9 +22,9 @@ const LoadingScreen: React.FC = () => {
             </div>
 
             <div className="flex flex-col items-center gap-2">
-                <span className="text-lg font-gentle text-amber-800/70 animate-in fade-in slide-in-from-bottom-4 duration-1000">শ্রীশ্রীবালক ব্রহ্মচারীর</span>
-                <h1 className="text-4xl md:text-5xl font-cursive text-amber-900 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-100">
-                    শৈশব কাহিনী
+                <span className="text-lg font-gentle text-amber-800/70 animate-in fade-in slide-in-from-bottom-4 duration-1000">{t.titlePrefix}</span>
+                <h1 className={`text-4xl ${selectedLanguage.code === 'hi' ? 'md:text-4xl' : 'md:text-5xl'} font-cursive text-amber-900 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-100`}>
+                    {t.titleMain}
                 </h1>
             </div>
 
@@ -24,7 +32,7 @@ const LoadingScreen: React.FC = () => {
                 <div className="w-12 h-1 bg-amber-200/50 rounded-full overflow-hidden">
                     <div className="h-full bg-amber-600 w-1/3 animate-[shimmer_1.5s_infinite_linear]"></div>
                 </div>
-                <p className="text-[10px] font-sans text-amber-900/40 tracking-widest uppercase">LOADING</p>
+                <p className="text-[10px] font-sans text-amber-900/40 tracking-widest uppercase">{t.loading}</p>
             </div>
         </div>
     );

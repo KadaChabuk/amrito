@@ -272,7 +272,10 @@ const App: React.FC = () => {
       <aside className={`fixed inset-y-0 left-0 z-40 w-80 bg-[#fbf9f4] border-r border-stone-200/60 transform transition-transform duration-500 md:relative md:translate-x-0 ${showSidebar ? 'translate-x-0 shadow-2xl' : '-translate-x-full md:translate-x-0'}`}>
         <div className="flex flex-col h-full">
           <div className="p-8 border-b border-stone-200/50 bg-white/50 backdrop-blur-sm">
-            <h2 className="text-3xl font-cursive font-normal text-stone-800 mb-6 leading-tight">শ্রীশ্রীবালক ব্রহ্মচারীর শৈশব কাহিনী</h2>
+            <div className="flex flex-col items-start gap-1 mb-6">
+              <span className="text-sm font-gentle text-stone-500">শ্রীশ্রীবালক ব্রহ্মচারীর</span>
+              <h2 className="text-3xl font-cursive font-normal text-stone-800 leading-tight">শৈশব কাহিনী</h2>
+            </div>
 
             {/* Tab Navigation */}
             <div className="flex p-1 bg-stone-100 rounded-lg">

@@ -13,13 +13,11 @@ const LoadingScreen: React.FC = () => {
                 <div className="absolute top-2 bottom-2 left-3 right-2 bg-white rounded-r-sm shadow-md animate-[pulse_2s_ease-in-out_infinite]"></div>
             </div>
 
-            <div className="flex flex-col items-center gap-4">
-                <h1 className="text-3xl font-cursive text-amber-900 animate-in fade-in slide-in-from-bottom-4 duration-1000">
-                    শ্রীশ্রীবালক ব্রহ্মচারীর
+            <div className="flex flex-col items-center gap-2">
+                <span className="text-lg font-gentle text-amber-800/70 animate-in fade-in slide-in-from-bottom-4 duration-1000">শ্রীশ্রীবালক ব্রহ্মচারীর</span>
+                <h1 className="text-4xl md:text-5xl font-cursive text-amber-900 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-100">
+                    শৈশব কাহিনী
                 </h1>
-                <p className="text-sm font-book tracking-[0.3em] uppercase text-amber-700/60 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-300">
-                    ডিজিটাল সংকলন
-                </p>
             </div>
 
             <div className="absolute bottom-12 flex flex-col items-center gap-2 opacity-50">

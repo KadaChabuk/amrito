@@ -277,6 +277,7 @@ const App: React.FC = () => {
               onScrollUpdate={handleScrollUpdate}
               initialProgress={readingState.progress[currentChapter.id] || 0}
               theme={theme}
+              selectedLanguage={selectedLanguage}
             />
           )}
         </div>

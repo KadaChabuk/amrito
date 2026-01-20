@@ -95,23 +95,36 @@ const TableOfContents: React.FC<TableOfContentsProps> = ({
             <button
               key={chapter.id}
               onClick={() => onSelect(globalIndex)}
-              className="w-full text-left py-3 px-3 flex items-start gap-4 transition-all group hover:bg-amber-900/5 rounded-md border border-transparent hover:border-amber-900/10"
+              className="w-full text-left py-4 px-4 flex items-center gap-5 transition-all group hover:bg-amber-900/[0.03] rounded-xl border border-transparent hover:border-amber-900/10 mb-1"
             >
-              <div className="w-8 h-8 rounded-full border border-amber-900/20 flex items-center justify-center bg-[#fdfaf1] group-hover:scale-110 transition-transform shadow-sm flex-shrink-0 mt-0.5">
-                <span className="font-book text-xs text-amber-900/70 font-bold">
+              <div className="w-10 h-10 rounded-full border border-amber-900/20 flex items-center justify-center bg-[#fdfaf1] group-hover:bg-amber-50 transition-all shadow-sm flex-shrink-0 relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-amber-900/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <span className="font-book text-sm text-amber-900/80 font-bold relative z-10">
                   {globalIndex + 1}
                 </span>
               </div>
 
               <div className="flex-1 min-w-0">
-                <h3 className="text-base font-book font-medium text-amber-950 group-hover:text-amber-800 transition-colors leading-snug break-words">
+                <h3 className="text-lg font-book font-medium text-amber-950 group-hover:text-amber-800 transition-colors leading-tight break-words tracking-tight">
                   {chapter.title}
                 </h3>
+                {chapter.subtitle && (
+                  <p className="text-xs font-main text-amber-900/50 mt-1 uppercase tracking-widest">
+                    {chapter.subtitle}
+                  </p>
+                )}
               </div>
 
-              {bookmarks.includes(chapter.id) && (
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" className="text-amber-600 flex-shrink-0 mt-1"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z" /></svg>
-              )}
+              <div className="flex flex-col items-end gap-2">
+                {bookmarks.includes(chapter.id) && (
+                  <div className="text-amber-600 drop-shadow-sm">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z" /></svg>
+                  </div>
+                )}
+                <div className="opacity-0 group-hover:opacity-100 transition-opacity text-amber-900/20">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="m9 18 6-6-6-6" /></svg>
+                </div>
+              </div>
             </button>
           );
         })}
@@ -130,11 +143,17 @@ const TableOfContents: React.FC<TableOfContentsProps> = ({
         {/* Header Section */}
         <div className="pt-8 pb-4 px-6 text-center">
           <div className="w-16 h-1 mx-auto bg-amber-900/20 rounded-full mb-6"></div>
-          <h2 className="text-3xl md:text-4xl font-bold font-cursive bg-gradient-to-b from-amber-700 to-amber-900 bg-clip-text text-transparent drop-shadow-sm mb-2 leading-relaxed py-2">{t.index}</h2>
-          <div className="flex items-center justify-center gap-2 mb-6 opacity-60">
-            <span className="h-px w-12 bg-amber-900/40"></span>
-            <span className="text-amber-800 text-xs font-book tracking-widest uppercase">TABLE OF CONTENTS</span>
-            <span className="h-px w-12 bg-amber-900/40"></span>
+          <h2 className="text-4xl md:text-5xl font-bold font-cursive bg-gradient-to-b from-amber-700 to-amber-900 bg-clip-text text-transparent drop-shadow-sm mb-4 leading-relaxed py-2">{t.index}</h2>
+
+          {/* Decorative Ornament instead of text */}
+          <div className="flex items-center justify-center gap-4 mb-8">
+            <div className="h-px w-16 bg-gradient-to-r from-transparent to-amber-900/30"></div>
+            <div className="text-amber-900/40 transform rotate-45">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2L15 9H22L16 14L18 21L12 17L6 21L8 14L2 9H9L12 2Z" />
+              </svg>
+            </div>
+            <div className="h-px w-16 bg-gradient-to-l from-transparent to-amber-900/30"></div>
           </div>
 
           <button

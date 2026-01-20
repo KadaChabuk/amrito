@@ -16,7 +16,13 @@ interface Translation {
     noBookmarks: string;
     viewIndex: string;
     backToCover: string;
+    backToCover: string;
     loading: string;
+    listen: string;
+    preparingAudio: string;
+    playing: string;
+    paused: string;
+    stop: string;
 }
 
 export const translations: Record<string, Translation> = {
@@ -25,9 +31,15 @@ export const translations: Record<string, Translation> = {
         titleMain: 'শৈশব কাহিনী',
         subtitle: 'ডিজিটাল সংকলন',
         organization: 'শ্রীশ্রীবালক ব্রহ্মচারী সেবা প্রতিষ্ঠান',
-        collectionEdit: 'সংগ্রহ ও সম্পাদনা',
-        touchToOpen: 'TOUCH TO OPEN',
+        author: 'লেখক',
         selectLanguage: 'ভাষা নির্বাচন করুন',
+        touchToOpen: 'খুলতে স্পর্শ করুন',
+        loading: 'বই লোড হচ্ছে...',
+        listen: 'শুনুন',
+        preparingAudio: 'অডিও প্রস্তুত হচ্ছে...',
+        playing: 'চলছে',
+        paused: 'থামানো আছে',
+        stop: 'বন্ধ করুন',
         index: 'সূচীপত্র',
         bookmarks: 'বুকমার্ক',
         quotes: 'উদ্ধৃতি',
@@ -36,16 +48,21 @@ export const translations: Record<string, Translation> = {
         noBookmarks: 'বুকমার্ক করা কোনো অধ্যায় নেই।',
         viewIndex: 'সুচীপত্র দেখুন',
         backToCover: 'প্রচ্ছদে ফিরুন',
-        loading: 'LOADING'
     },
     en: {
         titlePrefix: 'Sri Sri Balak Brahmachari\'s',
         titleMain: 'Childhood Stories',
         subtitle: 'Digital Compilation',
         organization: 'Sri Sri Balak Brahmachari Seva Pratisthan',
-        collectionEdit: 'Collection & Editing',
-        touchToOpen: 'TOUCH TO OPEN',
+        author: 'Author',
         selectLanguage: 'Select Language',
+        touchToOpen: 'TOUCH TO OPEN',
+        loading: 'Loading book...',
+        listen: 'Listen',
+        preparingAudio: 'Preparing Audio...',
+        playing: 'Playing',
+        paused: 'Paused',
+        stop: 'Stop',
         index: 'Table of Contents',
         bookmarks: 'Bookmarks',
         quotes: 'Quotes',
@@ -54,16 +71,21 @@ export const translations: Record<string, Translation> = {
         noBookmarks: 'No bookmarked chapters.',
         viewIndex: 'View Index',
         backToCover: 'Back to Cover',
-        loading: 'LOADING'
     },
     hi: {
         titlePrefix: 'श्री श्री बालक ब्रह्मचारी जी की',
         titleMain: 'बचपन की कहानियाँ',
         subtitle: 'डिजिटल संकलन',
         organization: 'श्री श्री बालक ब्रह्मचारी सेवा प्रतिष्ठान',
-        collectionEdit: 'संग्रह और संपादन',
-        touchToOpen: 'TOUCH TO OPEN',
+        author: 'लेखक',
         selectLanguage: 'भाषा चुनें',
+        touchToOpen: 'खोलने के लिए स्पर्श करें',
+        loading: 'किताब लोड हो रही है...',
+        listen: 'सुनें',
+        preparingAudio: 'ऑडियो तैयार हो रहा है...',
+        playing: 'चल रहा है',
+        paused: 'रुका हुआ',
+        stop: 'बंद करें',
         index: 'विषय सूची',
         bookmarks: 'बुकमार्क',
         quotes: 'उद्धरण',
@@ -72,16 +94,21 @@ export const translations: Record<string, Translation> = {
         noBookmarks: 'कोई बुकमार्क किए गए अध्याय नहीं।',
         viewIndex: 'सूची देखें',
         backToCover: 'कवर पर वापस जाएं',
-        loading: 'LOADING'
     },
     or: {
         titlePrefix: 'ଶ୍ରୀ ଶ୍ରୀ ବାଳକ ବ୍ରହ୍ମଚାରୀଙ୍କ',
         titleMain: 'ଶୈଶବ କାହାଣୀ',
         subtitle: 'ଡିଜିଟାଲ୍ ସଂକଳନ',
         organization: 'ଶ୍ରୀ ଶ୍ରୀ ବାଳକ ବ୍ରହ୍ମଚାରୀ ସେବା ପ୍ରତିଷ୍ଠାନ',
-        collectionEdit: 'ସଂଗ୍ରହ ଓ ସମ୍ପାଦନା',
-        touchToOpen: 'TOUCH TO OPEN',
+        author: 'ଲେଖକ',
         selectLanguage: 'ଭାଷା ଚୟନ କରନ୍ତୁ',
+        touchToOpen: 'ଖୋଲିବାକୁ ସ୍ପର୍ଶ କରନ୍ତୁ',
+        loading: 'ବହି ଲୋଡ୍ ହେଉଛି...',
+        listen: 'ଶୁଣନ୍ତୁ',
+        preparingAudio: 'ଅଡିଓ ପ୍ରସ୍ତୁତ ହେଉଛି...',
+        playing: 'ଚାଲୁଅଛି',
+        paused: 'ଅଟକିଛି',
+        stop: 'ବନ୍ଦ କରନ୍ତୁ',
         index: 'ସୂଚୀପତ୍ର',
         bookmarks: 'ବୁକମାର୍କ',
         quotes: 'ଉଦ୍ଧୃତି',
@@ -90,16 +117,21 @@ export const translations: Record<string, Translation> = {
         noBookmarks: 'କୌଣସି ବୁକମାର୍କ ଅଧ୍ୟାୟ ନାହିଁ।',
         viewIndex: 'ସୂଚୀ ଦେଖନ୍ତୁ',
         backToCover: 'କଭରକୁ ଫେରନ୍ତୁ',
-        loading: 'LOADING'
     },
     as: {
         titlePrefix: 'শ্ৰীশ্ৰীবালক ব্ৰহ্মচাৰীৰ',
         titleMain: 'শৈশৱ কাহিনী',
         subtitle: 'ডিজিটেল সংকলন',
         organization: 'শ্ৰীশ্ৰীবালক ব্ৰহ্মচাৰী সেৱা প্ৰতিষ্ঠান',
-        collectionEdit: 'সংগ্ৰহ আৰু সম্পাদনা',
-        touchToOpen: 'TOUCH TO OPEN',
+        author: 'লেখক',
         selectLanguage: 'ভাষা নিৰ্বাচন কৰক',
+        touchToOpen: 'খুলিবলৈ স্পর্শ কৰক',
+        loading: 'কিতাপ লোড হৈ আছে...',
+        listen: 'শুনক',
+        preparingAudio: 'অডিঅ’ প্ৰস্তুত হৈ আছে...',
+        playing: 'চলি আছে',
+        paused: 'ৰখোৱা হৈছে',
+        stop: 'বন্ধ কৰক',
         index: 'সূচীপত্ৰ',
         bookmarks: 'বুকমার্ক',
         quotes: 'উদ্ধৃতি',

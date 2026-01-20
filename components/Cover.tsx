@@ -102,7 +102,7 @@ const Cover: React.FC<CoverProps> = ({ onOpen, selectedLanguage, onLanguageChang
             </div>
 
             {/* Language Selection UI */}
-            <div className={`z-20 transition-opacity duration-300 w-full ${isOpen ? 'opacity-0' : 'opacity-100'}`} onClick={(e) => e.stopPropagation()}>
+            <div className={`z-20 transition-opacity duration-300 w-full mb-6 md:mb-8 ${isOpen ? 'opacity-0' : 'opacity-100'}`} onClick={(e) => e.stopPropagation()}>
               <p className="text-amber-500/40 text-[9px] md:text-[10px] uppercase tracking-widest text-center mb-2 md:mb-3 font-book">{t.selectLanguage}</p>
               <div className="flex flex-wrap justify-center gap-1.5 md:gap-3 px-1 md:px-2">
                 {LANGUAGES.map((lang) => (
@@ -121,13 +121,12 @@ const Cover: React.FC<CoverProps> = ({ onOpen, selectedLanguage, onLanguageChang
             </div>
 
             {/* Footer Area */}
-            <div className="flex flex-col items-center z-10 mb-2 md:mb-4 pointer-events-none select-none w-full px-4 text-center">
+            <div className="flex flex-col items-center z-10 mb-2 pointer-events-none select-none w-full px-4 text-center">
               <div className="h-px w-16 md:w-24 bg-gradient-to-r from-transparent via-amber-600/50 to-transparent mb-2 md:mb-3"></div>
-              <p className="text-amber-500/70 font-book italic tracking-widest text-[8px] md:text-[9px] uppercase max-w-full overflow-hidden text-ellipsis whitespace-nowrap">{t.collectionEdit}</p>
             </div>
 
             {/* Touch Hint */}
-            <div className={`absolute bottom-3 md:bottom-6 text-amber-600/30 text-[8px] md:text-[9px] tracking-[0.4em] font-sans transition-opacity duration-300 ${isOpen ? 'opacity-0' : 'animate-pulse opacity-100'}`}>
+            <div className={`absolute bottom-8 md:bottom-12 text-amber-600/30 text-[8px] md:text-[9px] tracking-[0.4em] font-sans transition-opacity duration-300 ${isOpen ? 'opacity-0' : 'animate-pulse opacity-100'}`}>
               {t.touchToOpen}
             </div>
           </div>

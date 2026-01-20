@@ -76,6 +76,45 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content, fontSize, 
       );
     }
 
+    // 3.5. Custom Images {{image:filename.webp|Caption}}
+    const imageMatch = trimmed.match(/^{{image:(.*?)}}/);
+    if (imageMatch) {
+      const parts = imageMatch[1].split('|');
+      const filename = parts[0].trim();
+      const caption = parts[1] ? parts[1].trim() : null;
+
+      return (
+        <div key={idx} className="my-10 flex flex-col items-center w-full px-6">
+          <div className="relative group transition-all duration-300">
+            <img
+              src={`/images/${filename}`}
+              alt={caption || "Illustration"}
+              className={`max-h-[500px] w-auto object-contain rounded-none shadow-xl ring-1 ring-black/5 
+                  transition-all duration-700 group-hover:scale-[1.02] group-hover:shadow-2xl
+                  ${themeMode === 'sepia' ? 'sepia-[.3]' : ''}
+                  ${themeMode === 'dark' ? 'brightness-90' : ''}
+                `}
+              onError={(e) => {
+                (e.target as HTMLImageElement).style.display = 'none';
+              }}
+            />
+          </div>
+
+          {/* Caption */}
+          {caption && (
+            <div className={`mt-4 px-6 text-center max-w-md animate-in fade-in slide-in-from-top-2 duration-700`}>
+              <span className={`inline-block w-8 h-px mb-3 opacity-20 ${themeMode === 'dark' ? 'bg-amber-500' : 'bg-amber-900'}`}></span>
+              <p className={`text-sm italic font-book tracking-wide leading-relaxed
+                ${themeMode === 'dark' ? 'text-stone-400' : 'text-stone-500'}
+              `}>
+                {caption}
+              </p>
+            </div>
+          )}
+        </div>
+      );
+    }
+
     // 4. Regular Paragraphs
     const isFirstText = !isInsideNote && !foundFirstTextParagraph;
     if (isFirstText) foundFirstTextParagraph = true;

@@ -3,14 +3,14 @@ package com.blackgrapes.amrito.ui.theme
 import androidx.compose.ui.graphics.Color
 
 object BookColors {
-    val Primary = Color(0xFF795548)
-    val Secondary = Color(0xFFBCAAA4)
-    val CoverPrimary = Color(0xFF8B4513)
-    val CoverSecondary = Color(0xFF654321)
-    val PageBackground = Color(0xFFFFF5E6)
-    val TextPrimary = Color(0xFF2B1810)
-    val TextSecondary = Color(0xFF666666)
-    val Shadow = Color(0x1A000000)
-    val SepiaBackground = Color(0xFFFBF0D9)
-    val SepiaText = Color(0xFF5B4636)
+    val Primary = Color(0xFF78350F)
+    val Secondary = Color(0xFFB45309)
+    val CoverPrimary = Color(0xFF2D1B1B) // Darker, cleaner background from new design
+    val CoverSecondary = Color(0xFF1A0F0F) // Deep gradient end
+    val PageBackground = Color(0xFFFDFAF1)
+    val TextPrimary = Color(0xFF451A03)
+    val TextSecondary = Color(0xFF92400E)
+    val Shadow = Color(0x33000000)
+    val Gold = Color(0xFFEECFA1) // For the title text
+    val Border = Color(0x33B45309) // Subtle amber border
 }

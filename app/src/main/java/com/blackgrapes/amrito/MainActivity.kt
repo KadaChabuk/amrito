@@ -16,7 +16,8 @@ import com.blackgrapes.amrito.ui.theme.BookColors
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        
+        androidx.activity.enableEdgeToEdge()
+
         setContent {
             AmritoTheme {
                 var isBookOpen by remember { mutableStateOf(false) }

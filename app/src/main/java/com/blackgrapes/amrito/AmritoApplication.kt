@@ -10,7 +10,8 @@ import coil.util.DebugLogger
 class AmritoApplication : Application(), ImageLoaderFactory {
     override fun onCreate() {
         super.onCreate()
-        // Initialize any required components here
+        // Initialize Filament for 3D rendering
+        com.google.android.filament.Filament.init()
     }
 
     override fun newImageLoader(): ImageLoader {

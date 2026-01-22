@@ -33,6 +33,7 @@ fun BookContent(modifier: Modifier = Modifier) {
 
     val renderer = remember { Basic2DPageRenderer() }
     var renderBitmap by remember { mutableStateOf<Bitmap?>(null) }
+    var redrawTrigger by remember { mutableStateOf(0) }
 
     var viewWidth by remember { mutableStateOf(0) }
     var viewHeight by remember { mutableStateOf(0) }
@@ -56,8 +57,8 @@ fun BookContent(modifier: Modifier = Modifier) {
         coroutineScope.launch {
             val pageWidth = viewWidth / 2
 
-            // We are rendering the composables in a background thread to avoid blocking the UI
-            withContext(Dispatchers.Default) {
+            // Rendering must happen on the Main thread because it involves creating and measuring Views
+            withContext(Dispatchers.Main) {
                 val leftBitmap = if (currentPageIndex > 0) {
                     renderComposableToBitmap(context, pageWidth, viewHeight) {
                         AmritoTheme { BookPage(pageContent = pages[currentPageIndex - 1]) }
@@ -78,9 +79,8 @@ fun BookContent(modifier: Modifier = Modifier) {
 
                 renderer.setPageTextures(leftBitmap, rightBitmap, nextBitmap)
                 renderer.updatePageCurl(viewWidth.toFloat(), 0f, 0f) // Initial render
-                withContext(Dispatchers.Main) {
-                    renderBitmap = renderer.getRenderedBitmap()
-                }
+                renderBitmap = renderer.getRenderedBitmap()
+                redrawTrigger++
             }
         }
     }
@@ -88,6 +88,7 @@ fun BookContent(modifier: Modifier = Modifier) {
     Canvas(
         modifier = modifier
             .fillMaxSize()
+            .windowInsetsPadding(WindowInsets.systemBars)
             .onSizeChanged { size ->
                 if (size.width == 0 || size.height == 0) return@onSizeChanged
                 viewWidth = size.width
@@ -106,6 +107,7 @@ fun BookContent(modifier: Modifier = Modifier) {
                         } else {
                             renderer.updatePageCurl(viewWidth.toFloat(), 0f, 0f)
                             renderBitmap = renderer.getRenderedBitmap()
+                            redrawTrigger++
                         }
                     },
                     onDrag = { change, _ ->
@@ -115,13 +117,17 @@ fun BookContent(modifier: Modifier = Modifier) {
                         renderer.updatePageCurl(touchX, change.position.y, progress.coerceIn(0f, 1f))
                         coroutineScope.launch(Dispatchers.Main) {
                             renderBitmap = renderer.getRenderedBitmap()
+                            redrawTrigger++
                         }
                     }
                 )
             }
     ) {
-        renderBitmap?.let {
-            drawImage(it.asImageBitmap())
+        // Observe redrawTrigger to force recomposition
+        redrawTrigger.let { _ ->
+            renderBitmap?.let {
+                drawImage(it.asImageBitmap())
+            }
         }
     }
 }

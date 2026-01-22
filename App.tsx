@@ -15,6 +15,7 @@ const App: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [view, setView] = useState<View>('cover');
   const [activeChapterIndex, setActiveChapterIndex] = useState(0);
+  const [showAppBar, setShowAppBar] = useState(true);
 
   const [selectedLanguage, setSelectedLanguage] = useState<Language>(() => {
     const saved = localStorage.getItem('thakur_selected_language');
@@ -240,8 +241,9 @@ const App: React.FC = () => {
   return (
     <div className={`h-screen flex flex-col overflow-hidden font-['Hind_Siliguri'] selection:bg-amber-200 reader-fade-in ${isDark ? 'bg-[#1a1c1e]' : 'bg-stone-50'}`}>
 
-      {/* Mobile AppBar */}
-      <div className={`md:hidden flex items-center justify-between px-3 h-16 border-b z-30 shadow-sm backdrop-blur-md sticky top-0
+      {/* Mobile AppBar - Auto-hide on scroll */}
+      <div className={`md:hidden flex items-center justify-between px-3 h-16 border-b z-30 shadow-sm backdrop-blur-md fixed top-0 left-0 right-0 transition-transform duration-300
+        ${showAppBar ? 'translate-y-0' : '-translate-y-full'}
         ${isDark ? 'bg-[#1a1c1e]/90 border-stone-800 text-stone-100' : 'bg-white/90 border-stone-200 text-stone-800'}`}>
         <div className="flex items-center gap-1">
           <button onClick={() => setView('index')} className="p-2 hover:bg-black/5 rounded-full" aria-label="Home">
@@ -261,6 +263,7 @@ const App: React.FC = () => {
         </div>
       </div>
 
+
       <main className="flex-1 relative overflow-hidden flex flex-col">
         <div className="flex-1 overflow-hidden">
           {currentChapter && (
@@ -278,6 +281,7 @@ const App: React.FC = () => {
               initialProgress={readingState.progress[currentChapter.id] || 0}
               theme={theme}
               selectedLanguage={selectedLanguage}
+              onAppBarVisibilityChange={setShowAppBar}
             />
           )}
         </div>

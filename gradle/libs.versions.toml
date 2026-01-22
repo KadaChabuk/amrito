@@ -31,7 +31,7 @@ coil-compose = "2.4.0"
 accompanist = "0.32.0"
 
 # OpenGL
-filament = "1.45.0"  # Android 3D rendering engine
+filament = "1.53.4"  # Android 3D rendering engine
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }

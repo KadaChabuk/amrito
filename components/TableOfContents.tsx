@@ -95,22 +95,19 @@ const TableOfContents: React.FC<TableOfContentsProps> = ({
             <button
               key={chapter.id}
               onClick={() => onSelect(globalIndex)}
-              className="w-full text-left py-4 px-4 flex items-center gap-5 transition-all group hover:bg-amber-900/[0.03] rounded-xl border border-transparent hover:border-amber-900/10 mb-1"
+              className="w-full text-left py-2 px-3 flex items-center gap-4 transition-all group hover:bg-amber-900/[0.04] rounded-lg border-b border-amber-900/5 last:border-0"
             >
-              <div className="w-10 h-10 rounded-full border border-amber-900/20 flex items-center justify-center bg-[#fdfaf1] group-hover:bg-amber-50 transition-all shadow-sm flex-shrink-0 relative overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-amber-900/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                <span className="font-book text-sm text-amber-900/80 font-bold relative z-10">
-                  {globalIndex + 1}
-                </span>
+              <div className="w-8 h-8 rounded-full border border-amber-900/10 flex items-center justify-center bg-[#fdfaf1] group-hover:bg-amber-50 transition-all font-book text-xs text-amber-900/60 font-medium relative top-0.5">
+                {globalIndex + 1}
               </div>
 
               <div className="flex-1 min-w-0">
-                <h3 className="text-lg font-book font-medium text-amber-950 group-hover:text-amber-800 transition-colors leading-tight break-words tracking-tight">
+                <h3 className="text-base md:text-lg font-book font-medium text-amber-950 group-hover:text-amber-800 transition-colors leading-tight tracking-tight">
                   {chapter.title}
                 </h3>
-                {chapter.subtitle && (
-                  <p className="text-xs font-main text-amber-900/50 mt-1 uppercase tracking-widest">
-                    {chapter.subtitle}
+                {chapter.writer && (
+                  <p className="text-[10px] md:text-xs font-main text-amber-900/60 mt-0.5 uppercase tracking-wide">
+                    {chapter.writer}
                   </p>
                 )}
               </div>
@@ -127,8 +124,9 @@ const TableOfContents: React.FC<TableOfContentsProps> = ({
               </div>
             </button>
           );
-        })}
-      </div>
+        })
+        }
+      </div >
     );
   };
 
@@ -138,29 +136,32 @@ const TableOfContents: React.FC<TableOfContentsProps> = ({
       <div className="absolute inset-0 opacity-[0.03] pointer-events-none paper-texture bg-repeat" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23000000\' fill-opacity=\'1\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")' }}></div>
       <div className="absolute inset-y-0 left-0 w-1 md:w-2 bg-gradient-to-r from-amber-900/20 to-transparent"></div>
 
-      <div className="h-full flex flex-col max-w-[480px] mx-auto relative z-10 bg-[#fdfaf1]/50 shadow-2xl md:my-8 md:h-[calc(100%-4rem)] md:rounded-r-sm md:border-l md:border-stone-300">
+      <div className="absolute inset-y-0 left-0 w-1 md:w-2 bg-gradient-to-r from-amber-900/20 to-transparent"></div>
+      <div className="absolute inset-y-0 right-0 w-1 bg-gradient-to-l from-amber-900/10 to-transparent"></div>
+
+      <div className="h-full flex flex-col max-w-[500px] mx-auto relative z-10 bg-[#fdfaf1] shadow-[0_0_50px_rgba(0,0,0,0.1)] md:my-6 md:h-[calc(100%-3rem)] md:rounded-[3px] md:border md:border-stone-200">
 
         {/* Header Section */}
-        <div className="pt-8 pb-4 px-6 text-center">
-          <div className="w-16 h-1 mx-auto bg-amber-900/20 rounded-full mb-6"></div>
-          <h2 className="text-4xl md:text-5xl font-bold font-cursive bg-gradient-to-b from-amber-700 to-amber-900 bg-clip-text text-transparent drop-shadow-sm mb-4 leading-relaxed py-2">{t.index}</h2>
+        <div className="pt-5 pb-2 px-6 text-center">
+          <div className="w-12 h-1 mx-auto bg-amber-900/20 rounded-full mb-3"></div>
+          <h2 className="text-3xl md:text-4xl font-bold font-cursive bg-gradient-to-b from-amber-700 to-amber-900 bg-clip-text text-transparent drop-shadow-sm mb-2 leading-relaxed py-1">{t.index}</h2>
 
           {/* Decorative Ornament instead of text */}
-          <div className="flex items-center justify-center gap-4 mb-8">
-            <div className="h-px w-16 bg-gradient-to-r from-transparent to-amber-900/30"></div>
-            <div className="text-amber-900/40 transform rotate-45">
+          <div className="flex items-center justify-center gap-4 mb-4">
+            <div className="h-px w-12 bg-gradient-to-r from-transparent to-amber-900/30"></div>
+            <div className="text-amber-900/40 transform rotate-45 scale-75">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M12 2L15 9H22L16 14L18 21L12 17L6 21L8 14L2 9H9L12 2Z" />
               </svg>
             </div>
-            <div className="h-px w-16 bg-gradient-to-l from-transparent to-amber-900/30"></div>
+            <div className="h-px w-12 bg-gradient-to-l from-transparent to-amber-900/30"></div>
           </div>
 
           <button
             onClick={onBack}
-            className="absolute top-6 right-6 p-2 rounded-full border border-amber-900/20 text-amber-900/60 hover:bg-amber-900/5 hover:text-amber-900 transition-all active:scale-95"
+            className="absolute top-4 right-4 p-1.5 rounded-full border border-amber-900/20 text-amber-900/60 hover:bg-amber-900/5 hover:text-amber-900 transition-all active:scale-95"
           >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 6L6 18M6 6l12 12" /></svg>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 6L6 18M6 6l12 12" /></svg>
           </button>
         </div>
 

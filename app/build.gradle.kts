@@ -11,7 +11,7 @@ android {
     defaultConfig {
         applicationId = "com.blackgrapes.amrito"
         minSdk = 26
-        targetSdk = 36
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
@@ -46,6 +46,9 @@ android {
     }
     
     packaging {
+        jniLibs {
+            useLegacyPackaging = false
+        }
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }

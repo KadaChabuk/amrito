@@ -41,7 +41,6 @@ class Basic2DPageRenderer : PageRenderer {
         this.width = width
         this.height = height
         
-        renderBitmap?.recycle()
         renderBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
         renderCanvas = Canvas(renderBitmap!!)
     }

@@ -42,51 +42,46 @@
     text-shadow: 0px 1px 0px rgba(0, 0, 0, 0.2);
 }
 
-/* Page Flip Animations with 3D effect */
-@keyframes pageFlipNext {
+/* Realistic Cover-Style Page Turns */
+@keyframes realisticFlipNext {
     0% {
         transform: rotateY(0deg);
-        transform-origin: left center;
-        box-shadow: 5px 0 15px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 0 0 rgba(0, 0, 0, 0);
     }
 
     100% {
-        transform: rotateY(-180deg);
-        transform-origin: left center;
-        box-shadow: 20px 0 50px rgba(0, 0, 0, 0.2);
-        opacity: 0;
+        transform: rotateY(-130deg);
+        box-shadow: 40px 0 80px rgba(0, 0, 0, 0.5);
     }
 }
 
-@keyframes pageFlipPrev {
+@keyframes realisticFlipPrev {
     0% {
-        transform: rotateY(-180deg);
-        transform-origin: left center;
-        opacity: 0;
+        transform: rotateY(-130deg);
+        box-shadow: 40px 0 80px rgba(0, 0, 0, 0.5);
     }
 
     100% {
         transform: rotateY(0deg);
-        transform-origin: left center;
-        opacity: 1;
+        box-shadow: 0 0 0 rgba(0, 0, 0, 0);
     }
 }
 
-.page-flip-next-animation {
-    animation: pageFlipNext 0.8s cubic-bezier(0.645, 0.045, 0.355, 1.000) forwards;
+.page-turn-next {
+    animation: realisticFlipNext 1.2s cubic-bezier(0.645, 0.045, 0.355, 1) forwards;
+    transform-origin: left center;
     backface-visibility: hidden;
-    transform-style: preserve-3d;
 }
 
-.page-flip-prev-animation {
-    animation: pageFlipPrev 0.8s cubic-bezier(0.645, 0.045, 0.355, 1.000) forwards;
+.page-turn-prev {
+    animation: realisticFlipPrev 1.2s cubic-bezier(0.645, 0.045, 0.355, 1) forwards;
+    transform-origin: left center;
     backface-visibility: hidden;
-    transform-style: preserve-3d;
 }
 
-/* 3D Perspective Container */
+/* 3D Perspective Container - Keeping for other potential uses */
 .book-perspective {
-    perspective: 1500px;
+    perspective: 2000px;
 }
 
 .bangla-dropcap::first-letter {
@@ -115,4 +110,29 @@
 
 ::-webkit-scrollbar-thumb:hover {
     background: rgba(120, 113, 108, 0.5);
+}
+
+/* Under-page shadow for realism */
+@keyframes underPageShadow {
+    0% {
+        opacity: 0;
+    }
+
+    20% {
+        opacity: 1;
+    }
+
+    80% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+.under-page-shadow {
+    animation: underPageShadow 1.2s cubic-bezier(0.645, 0.045, 0.355, 1) forwards;
+    background: linear-gradient(to right, rgba(0, 0, 0, 0.4), transparent 150px);
+    z-index: 45;
 }

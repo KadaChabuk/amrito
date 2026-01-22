@@ -3,6 +3,7 @@ import { Language } from '../types';
 interface Translation {
     titlePrefix: string;
     titleMain: string;
+    spineText: string;
     subtitle: string;
     organization: string;
     collectionEdit: string;
@@ -23,12 +24,16 @@ interface Translation {
     playing: string;
     paused: string;
     stop: string;
+    resumeReading: string;
+    yes: string;
+    no: string;
 }
 
 export const translations: Record<string, Translation> = {
     bn: {
         titlePrefix: 'শ্রীশ্রীবালক ব্রহ্মচারীর',
         titleMain: 'শৈশব কাহিনী',
+        spineText: 'শৈশব কাহিনী',
         subtitle: 'ডিজিটাল সংকলন',
         organization: 'শ্রীশ্রীবালক ব্রহ্মচারী সেবা প্রতিষ্ঠান',
         author: 'লেখক',
@@ -48,10 +53,14 @@ export const translations: Record<string, Translation> = {
         noBookmarks: 'বুকমার্ক করা কোনো অধ্যায় নেই।',
         viewIndex: 'সুচীপত্র দেখুন',
         backToCover: 'প্রচ্ছদে ফিরুন',
+        resumeReading: 'আগের অবস্থান থেকে পড়া শুরু করুন',
+        yes: 'হ্যাঁ',
+        no: 'না',
     },
     en: {
         titlePrefix: 'Sri Sri Balak Brahmachari\'s',
         titleMain: 'Childhood Stories',
+        spineText: 'Childhood Stories',
         subtitle: 'Digital Compilation',
         organization: 'Sri Sri Balak Brahmachari Seva Pratisthan',
         author: 'Author',
@@ -71,10 +80,14 @@ export const translations: Record<string, Translation> = {
         noBookmarks: 'No bookmarked chapters.',
         viewIndex: 'View Index',
         backToCover: 'Back to Cover',
+        resumeReading: 'Resume from last position',
+        yes: 'Yes',
+        no: 'No',
     },
     hi: {
         titlePrefix: 'श्री श्री बालक ब्रह्मचारी जी की',
         titleMain: 'बचपन की कहानियाँ',
+        spineText: 'बचपन की कहानियाँ',
         subtitle: 'डिजिटल संकलन',
         organization: 'श्री श्री बालक ब्रह्मचारी सेवा प्रतिष्ठान',
         author: 'लेखक',
@@ -94,10 +107,14 @@ export const translations: Record<string, Translation> = {
         noBookmarks: 'कोई बुकमार्क किए गए अध्याय नहीं।',
         viewIndex: 'सूची देखें',
         backToCover: 'कवर पर वापस जाएं',
+        resumeReading: 'पिछली स्थिति से पढ़ना शुरू करें',
+        yes: 'हाँ',
+        no: 'नहीं',
     },
     or: {
         titlePrefix: 'ଶ୍ରୀ ଶ୍ରୀ ବାଳକ ବ୍ରହ୍ମଚାରୀଙ୍କ',
         titleMain: 'ଶୈଶବ କାହାଣୀ',
+        spineText: 'ଶୈଶବ କାହାଣୀ',
         subtitle: 'ଡିଜିଟାଲ୍ ସଂକଳନ',
         organization: 'ଶ୍ରୀ ଶ୍ରୀ ବାଳକ ବ୍ରହ୍ମଚାରୀ ସେବା ପ୍ରତିଷ୍ଠାନ',
         author: 'ଲେଖକ',
@@ -117,10 +134,14 @@ export const translations: Record<string, Translation> = {
         noBookmarks: 'କୌଣସି ବୁକମାର୍କ ଅଧ୍ୟାୟ ନାହିଁ।',
         viewIndex: 'ସୂଚୀ ଦେଖନ୍ତୁ',
         backToCover: 'କଭରକୁ ଫେରନ୍ତୁ',
+        resumeReading: 'ପୂର୍ବ ସ୍ଥାନରୁ ପଢ଼ା ଆରମ୍ଭ କରନ୍ତୁ',
+        yes: 'ହଁ',
+        no: 'ନା',
     },
     as: {
         titlePrefix: 'শ্ৰীশ্ৰীবালক ব্ৰহ্মচাৰীৰ',
         titleMain: 'শৈশৱ কাহিনী',
+        spineText: 'শৈশৱ কাহিনী',
         subtitle: 'ডিজিটেল সংকলন',
         organization: 'শ্ৰীশ্ৰীবালক ব্ৰহ্মচাৰী সেৱা প্ৰতিষ্ঠান',
         author: 'লেখক',
@@ -140,6 +161,9 @@ export const translations: Record<string, Translation> = {
         noBookmarks: 'বুকমার্ক কৰা কোনো অধ্যায় নাই।',
         viewIndex: 'সূচী চাওক',
         backToCover: 'প্রচ্ছদলৈ উভতি যাওক',
+        resumeReading: 'আগৰ স্থানৰ পৰা পঢ়া আৰম্ভ কৰক',
+        yes: 'হয়',
+        no: 'নহয়',
         loading: 'LOADING'
     }
 };

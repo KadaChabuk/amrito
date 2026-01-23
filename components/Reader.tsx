@@ -1,5 +1,5 @@
 
-import React, { useEffect, useRef, useState, useCallback } from 'react';
+import React, { useEffect, useRef, useState, useCallback, useImperativeHandle, forwardRef } from 'react';
 import { Chapter, Theme, Quote, Language } from '../types';
 import MarkdownRenderer from './MarkdownRenderer';
 import AudioPlayer from './AudioPlayer';
@@ -24,6 +24,10 @@ interface ReaderProps {
   onThemeChange?: (mode: Theme['mode']) => void;
 }
 
+export interface ReaderRef {
+  triggerJumpAnimation: (direction: 'next' | 'prev', callback: () => void) => void;
+}
+
 interface SelectionState {
   text: string;
   x: number;
@@ -33,7 +37,7 @@ interface SelectionState {
 
 type TtsStatus = 'stopped' | 'loading' | 'playing' | 'paused';
 
-const Reader: React.FC<ReaderProps> = ({
+const Reader = forwardRef<ReaderRef, ReaderProps>(({
   chapter,
   onNext,
   onPrev,
@@ -50,7 +54,7 @@ const Reader: React.FC<ReaderProps> = ({
   onAppBarVisibilityChange,
   onFontSizeChange,
   onThemeChange
-}) => {
+}, ref) => {
   const readerRef = useRef<HTMLDivElement>(null);
   const audioCtxRef = useRef<AudioContext | null>(null);
   const speechUtteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
@@ -95,6 +99,41 @@ const Reader: React.FC<ReaderProps> = ({
     }
   };
 
+  useImperativeHandle(ref, () => ({
+    triggerJumpAnimation: (direction: 'next' | 'prev', callback: () => void) => {
+      if (isAnimating) {
+        callback();
+        return;
+      }
+
+      triggerHaptic(20);
+      playSwishSound();
+
+      // Capture current state before animation
+      setAnimatingChapter(chapter);
+      setAnimatingScrollTop(readerRef.current?.scrollTop || 0);
+      setAnimationDir(direction);
+      setIsAnimating(true);
+
+      // Delay the actual chapter switch
+      setTimeout(() => callback(), 200);
+
+      setTimeout(() => {
+        setIsAnimating(false);
+        setAnimationDir(null);
+        setAnimatingChapter(null);
+        setAnimatingScrollTop(0);
+      }, 1400);
+    }
+  }));
+
+  useEffect(() => {
+    setHasRestoredScroll(false);
+    setShowFontMenu(false);
+    setShowThemeMenu(false);
+    setResumePosition(null);
+  }, [chapter.id]);
+
   useEffect(() => {
     if (readerRef.current) {
       if (theme.rememberScroll && initialProgress > 0 && !hasRestoredScroll) {
@@ -104,21 +143,21 @@ const Reader: React.FC<ReaderProps> = ({
 
         if (targetTop > 200) { // Only prompt if significant progress
           setResumePosition(targetTop);
-          readerRef.current.scrollTo({ top: 0, behavior: 'auto' });
+          readerRef.current.scrollTop = 0;
         } else {
           // Just scroll if it's near the top anyway
-          readerRef.current.scrollTo({ top: targetTop, behavior: 'auto' });
+          readerRef.current.scrollTop = targetTop;
         }
         setHasRestoredScroll(true);
       } else if (!hasRestoredScroll) {
-        readerRef.current.scrollTo({ top: 0, behavior: 'auto' });
+        readerRef.current.scrollTop = 0;
         setHasRestoredScroll(true);
       }
     }
     setShowScrollTop(false);
     setSelection({ text: '', x: 0, y: 0, visible: false });
     handleStopTts();
-  }, [chapter.id, isAnimating, theme.rememberScroll]);
+  }, [chapter.id, isAnimating, theme.rememberScroll, hasRestoredScroll]);
 
   const handleResumeReading = () => {
     if (resumePosition !== null && readerRef.current) {
@@ -416,7 +455,7 @@ const Reader: React.FC<ReaderProps> = ({
   }, [toast]);
 
   return (
-    <div className={`relative h-full flex flex-col ${currentTheme.bg} ${currentTheme.text}`}>
+    <div className={`relative h-full flex flex-col book-perspective ${currentTheme.bg} ${currentTheme.text}`}>
       {toast && (
         <div className="fixed top-20 left-1/2 -translate-x-1/2 z-[100] px-4 py-2 bg-amber-800 text-amber-50 rounded-full shadow-lg text-sm font-main animate-in fade-in slide-in-from-top-4 duration-300">
           {toast}
@@ -424,29 +463,51 @@ const Reader: React.FC<ReaderProps> = ({
       )}
 
       {resumePosition !== null && (
-        <div className="fixed inset-0 z-[100] flex items-end md:items-center justify-center pointer-events-none pb-8 md:pb-0 font-main">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center pointer-events-none p-6 font-main backdrop-blur-sm bg-black/5 animate-in fade-in duration-500">
           <div
-            className={`pointer-events-auto mx-4 w-full max-w-sm p-5 rounded-2xl shadow-2xl animate-in fade-in slide-in-from-bottom-8 duration-500 border ${isDark ? 'bg-stone-800 border-amber-900/30' : 'bg-[#fffdfa] border-amber-100'}`}
+            className={`pointer-events-auto w-full max-w-sm p-8 rounded-[32px] shadow-[0_20px_50px_rgba(0,0,0,0.2)] animate-in fade-in zoom-in-95 duration-500 border relative overflow-hidden
+              ${isDark
+                ? 'bg-stone-900/90 border-stone-800 text-stone-100 shadow-black/40'
+                : 'bg-white/95 border-amber-100 text-stone-900 shadow-amber-900/10'}`}
           >
-            <div className="flex flex-col gap-4 text-center">
-              <div className="flex items-center justify-center gap-3">
-                <div className="bg-amber-500/20 text-amber-600 rounded-full p-2">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z" /><polyline points="13 2 13 9 20 9" /></svg>
-                </div>
-                <h3 className={`text-base font-bold ${isDark ? 'text-amber-100' : 'text-amber-900'}`}>{t.resumeReading}?</h3>
+            {/* Elegant Background Details */}
+            <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/5 rounded-full -mr-16 -mt-16 blur-3xl"></div>
+            <div className="absolute bottom-0 left-0 w-32 h-32 bg-amber-500/5 rounded-full -ml-16 -mb-16 blur-3xl"></div>
+
+            <div className="relative z-10 flex flex-col items-center text-center gap-6">
+              <div className={`w-16 h-16 rounded-full flex items-center justify-center shadow-inner border transition-colors duration-500
+                ${isDark ? 'bg-stone-800 border-stone-700' : 'bg-amber-50 border-amber-100'}`}>
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className={isDark ? 'text-amber-400' : 'text-amber-700'}>
+                  <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
               </div>
 
-              <div className="flex gap-3 mt-1">
+              <div className="space-y-2">
+                <h3 className={`text-xl font-bold tracking-tight ${isDark ? 'text-amber-200' : 'text-amber-900'}`}>
+                  {t.resumeReading}
+                </h3>
+                <p className={`text-sm leading-relaxed ${isDark ? 'text-stone-400' : 'text-stone-500'}`}>
+                  {selectedLanguage.code === 'en'
+                    ? "Pick up right where you left off in this chapter."
+                    : "এই অধ্যায়টি আপনার সুবিধামতো পড়ুন।"}
+                </p>
+              </div>
+
+              <div className="flex w-full gap-3 mt-2">
                 <button
                   onClick={(e) => { e.stopPropagation(); setResumePosition(null); }}
-                  className={`flex-1 py-2.5 rounded-xl font-bold text-sm transition-all ${isDark ? 'bg-stone-700 hover:bg-stone-600 text-stone-300' : 'bg-stone-100 hover:bg-stone-200 text-stone-600'}`}
+                  className={`flex-1 py-3.5 rounded-2xl font-bold text-sm transition-all active:scale-95
+                    ${isDark
+                      ? 'bg-stone-800 hover:bg-stone-700 text-stone-400'
+                      : 'bg-stone-50 hover:bg-stone-100 text-stone-500 border border-stone-100'}`}
                 >
                   {t.no}
                 </button>
                 <button
                   onClick={(e) => { e.stopPropagation(); handleResumeReading(); }}
-                  className="flex-1 py-2.5 rounded-xl font-bold text-sm bg-amber-600 hover:bg-amber-700 text-white shadow-lg shadow-amber-900/20 transition-all active:scale-95 flex items-center justify-center gap-2"
+                  className="flex-1 py-3.5 rounded-2xl font-bold text-sm bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white shadow-[0_8px_20px_rgba(180,83,9,0.2)] transition-all active:scale-95 flex items-center justify-center gap-2"
                 >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M5 12h14m-7-7l7 7-7 7" /></svg>
                   {t.yes}
                 </button>
               </div>
@@ -480,7 +541,8 @@ const Reader: React.FC<ReaderProps> = ({
 
       <div
         ref={readerRef}
-        className="flex-1 overflow-y-auto scroll-smooth hide-scrollbar"
+        className="flex-1 overflow-y-auto scroll-smooth hide-scrollbar p-0"
+        style={{ scrollbarGutter: 'stable', contain: 'layout', overscrollBehavior: 'none' }}
         onScroll={handleScroll}
         onMouseUp={handleSelection}
         onTouchEnd={handleSelection}
@@ -579,15 +641,15 @@ const Reader: React.FC<ReaderProps> = ({
           {/* Dynamic Under-page Shadow cast on the new content - Constrained to reader */}
           <div className="under-page-shadow absolute inset-0 pointer-events-none"></div>
 
-          <div className="page-turn-overlay absolute inset-0 pointer-events-none z-50 book-perspective">
+          <div className="page-turn-overlay absolute inset-0 pointer-events-none z-50 origin-left">
             <div
-              className={`w-full h-full absolute inset-0 origin-left overflow-y-scroll
+              className={`w-full h-full absolute inset-0 origin-left overflow-hidden
               ${animationDir === 'next' ? 'page-turn-next' : 'page-turn-prev'} 
-              ${isDark ? 'bg-stone-900 text-stone-100' : 'bg-[#fffdfa] text-stone-900'} 
+              ${theme.mode === 'soft' ? 'bg-[#f4ecd8] text-stone-800' : isDark ? 'bg-stone-900 text-stone-100' : 'bg-[#fffdfa] text-stone-900'} 
               paper-texture border-l border-white/5 shadow-2xl`}
             >
               {/* Render the ACTUAL content at the current scroll position */}
-              <div className="max-w-3xl mx-auto px-6 md:px-12 py-10 md:py-16" style={{ marginTop: `-${animatingScrollTop}px` }}>
+              <div className="max-w-3xl mx-auto px-6 md:px-12 pt-16 md:pt-10 pb-10 md:pb-16" style={{ marginTop: `-${animatingScrollTop}px` }}>
                 <header className="mb-12 md:mb-16 text-center">
                   <div className="flex items-center justify-center gap-4 mb-6">
                     <span className={`h-px w-8 md:w-12 ${isDark ? 'bg-stone-800' : 'bg-stone-200'}`}></span>
@@ -704,6 +766,6 @@ const Reader: React.FC<ReaderProps> = ({
 
     </div>
   );
-};
+});
 
 export default Reader;

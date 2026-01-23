@@ -71,12 +71,14 @@
     animation: realisticFlipNext 1.2s cubic-bezier(0.645, 0.045, 0.355, 1) forwards;
     transform-origin: left center;
     backface-visibility: hidden;
+    will-change: transform;
 }
 
 .page-turn-prev {
     animation: realisticFlipPrev 1.2s cubic-bezier(0.645, 0.045, 0.355, 1) forwards;
     transform-origin: left center;
     backface-visibility: hidden;
+    will-change: transform;
 }
 
 /* 3D Perspective Container - Keeping for other potential uses */

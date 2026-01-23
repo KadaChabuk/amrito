@@ -3,7 +3,8 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Chapter, ReadingState, Theme, Quote, LANGUAGES, Language } from './types';
 import { fetchChapters } from './services/csvService';
 import { getTranslation } from './translations';
-import Reader from './components/Reader';
+import Reader, { ReaderRef } from './components/Reader';
+import { useRef } from 'react';
 import Cover from './components/Cover';
 import TableOfContents from './components/TableOfContents';
 import LoadingScreen from './components/LoadingScreen';
@@ -16,6 +17,7 @@ const App: React.FC = () => {
   const [view, setView] = useState<View>('cover');
   const [activeChapterIndex, setActiveChapterIndex] = useState(0);
   const [showAppBar, setShowAppBar] = useState(true);
+  const readerRef = useRef<ReaderRef>(null);
 
   const [selectedLanguage, setSelectedLanguage] = useState<Language>(() => {
     const saved = localStorage.getItem('thakur_selected_language');
@@ -191,9 +193,33 @@ const App: React.FC = () => {
   };
 
   const goToChapter = (index: number) => {
+    if (activeChapterIndex === index && view === 'reader') return;
+
     triggerHaptic(10);
-    setActiveChapterIndex(index);
-    setView('reader');
+
+    const direction = index > activeChapterIndex ? 'next' : 'prev';
+
+    // If we are in index view, first flip to reader view
+    if (view === 'index') {
+      setView('reader');
+      // Delay slightly to allow Reader to render and the "currentChapter" to be correct
+      setTimeout(() => {
+        if (readerRef.current) {
+          readerRef.current.triggerJumpAnimation(direction, () => {
+            setActiveChapterIndex(index);
+          });
+        } else {
+          setActiveChapterIndex(index);
+        }
+      }, 150);
+    } else if (readerRef.current) {
+      readerRef.current.triggerJumpAnimation(direction, () => {
+        setActiveChapterIndex(index);
+      });
+    } else {
+      setActiveChapterIndex(index);
+      setView('reader');
+    }
   };
 
   const goToChapterById = (id: string) => {
@@ -218,20 +244,6 @@ const App: React.FC = () => {
     />
   );
 
-  if (view === 'index') return (
-    <TableOfContents
-      chapters={chapters}
-      bookmarks={readingState.bookmarks}
-      quotes={readingState.quotes || []}
-      onSelect={goToChapter}
-      onBack={handleCloseBook}
-      onRemoveQuote={removeQuote}
-      onGoToChapterById={goToChapterById}
-      theme={theme}
-      selectedLanguage={selectedLanguage}
-      activeChapterIndex={activeChapterIndex}
-    />
-  );
 
   const currentChapter = chapters[activeChapterIndex];
   const progressPercent = chapters.length > 0 ? ((activeChapterIndex + 1) / chapters.length) * 100 : 0;
@@ -242,6 +254,24 @@ const App: React.FC = () => {
   return (
     <div className={`h-screen flex flex-col overflow-hidden font-['Hind_Siliguri'] selection:bg-amber-200 reader-fade-in 
       ${theme.mode === 'dark' ? 'bg-[#1a1c1e]' : theme.mode === 'soft' ? 'bg-[#f4ecd8]' : 'bg-stone-50'}`}>
+
+      {/* Mobile Index View - Overlay when view is 'index' */}
+      {view === 'index' && (
+        <div className="md:hidden fixed inset-0 z-[60] animate-in fade-in slide-in-from-bottom-4 duration-300">
+          <TableOfContents
+            chapters={chapters}
+            bookmarks={readingState.bookmarks}
+            quotes={readingState.quotes || []}
+            onSelect={goToChapter}
+            onBack={handleCloseBook}
+            onRemoveQuote={removeQuote}
+            onGoToChapterById={goToChapterById}
+            theme={theme}
+            selectedLanguage={selectedLanguage}
+            activeChapterIndex={activeChapterIndex}
+          />
+        </div>
+      )}
 
       {/* Mobile AppBar - Auto-hide on scroll */}
       <div className={`md:hidden flex items-center justify-between px-3 h-16 border-b z-30 shadow-sm backdrop-blur-md fixed top-0 left-0 right-0 transition-transform duration-300
@@ -290,10 +320,11 @@ const App: React.FC = () => {
           />
         </div>
 
-        <div className="flex-1 flex flex-col relative overflow-hidden">
-          <div className="flex-1 overflow-hidden">
+        <div className="flex-1 flex flex-col relative w-full overflow-hidden">
+          <div className="flex-1 overflow-hidden h-full">
             {currentChapter && (
               <Reader
+                ref={readerRef}
                 chapter={currentChapter}
                 onNext={handleNext}
                 onPrev={handlePrev}

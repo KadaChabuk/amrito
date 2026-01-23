@@ -229,6 +229,7 @@ const App: React.FC = () => {
       onGoToChapterById={goToChapterById}
       theme={theme}
       selectedLanguage={selectedLanguage}
+      activeChapterIndex={activeChapterIndex}
     />
   );
 
@@ -246,8 +247,14 @@ const App: React.FC = () => {
         ${showAppBar ? 'translate-y-0' : '-translate-y-full'}
         ${isDark ? 'bg-[#1a1c1e]/90 border-stone-800 text-stone-100' : 'bg-white/90 border-stone-200 text-stone-800'}`}>
         <div className="flex items-center gap-1">
-          <button onClick={() => setView('index')} className="p-2 hover:bg-black/5 rounded-full" aria-label="Home">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" /><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" /></svg>
+          <button onClick={handleCloseBook} className="p-2 hover:bg-black/5 rounded-xl border border-transparent active:border-amber-900/20 active:bg-amber-900/5 transition-all" aria-label={t.backToCover}>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+              <polyline points="9 22 9 12 15 12 15 22" />
+            </svg>
+          </button>
+          <button onClick={() => setView('index')} className="p-2 hover:bg-black/5 rounded-xl border border-transparent active:border-amber-900/20 active:bg-amber-900/5 transition-all ml-1" aria-label={t.index}>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" /><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" /></svg>
           </button>
         </div>
 
@@ -264,29 +271,48 @@ const App: React.FC = () => {
       </div>
 
 
-      <main className="flex-1 relative overflow-hidden flex flex-col">
-        <div className="flex-1 overflow-hidden">
-          {currentChapter && (
-            <Reader
-              chapter={currentChapter}
-              onNext={handleNext}
-              onPrev={handlePrev}
-              isFirst={activeChapterIndex === 0}
-              isLast={activeChapterIndex === chapters.length - 1}
-              isBookmarked={isBookmarked}
-              onToggleBookmark={toggleBookmark}
-              onSaveQuote={handleSaveQuote}
-              onCloseBook={handleCloseBook}
-              onScrollUpdate={handleScrollUpdate}
-              initialProgress={readingState.progress[currentChapter.id] || 0}
-              theme={theme}
-              selectedLanguage={selectedLanguage}
-              onAppBarVisibilityChange={setShowAppBar}
-            />
-          )}
+      <main className="flex-1 relative overflow-hidden flex flex-row">
+        {/* Desktop Sidebar Index */}
+        <div className="hidden md:block w-80 lg:w-96 h-full border-r border-stone-200 dark:border-stone-800">
+          <TableOfContents
+            chapters={chapters}
+            bookmarks={readingState.bookmarks}
+            quotes={readingState.quotes || []}
+            onSelect={goToChapter}
+            onBack={handleCloseBook}
+            onRemoveQuote={removeQuote}
+            onGoToChapterById={goToChapterById}
+            theme={theme}
+            selectedLanguage={selectedLanguage}
+            isSidebar={true}
+            activeChapterIndex={activeChapterIndex}
+          />
         </div>
-        <div className="h-1 bg-stone-200/30 w-full absolute bottom-0 left-0 right-0 overflow-hidden">
-          <div className="h-full bg-amber-700 transition-all duration-700" style={{ width: `${progressPercent}%` }} />
+
+        <div className="flex-1 flex flex-col relative overflow-hidden">
+          <div className="flex-1 overflow-hidden">
+            {currentChapter && (
+              <Reader
+                chapter={currentChapter}
+                onNext={handleNext}
+                onPrev={handlePrev}
+                isFirst={activeChapterIndex === 0}
+                isLast={activeChapterIndex === chapters.length - 1}
+                isBookmarked={isBookmarked}
+                onToggleBookmark={toggleBookmark}
+                onSaveQuote={handleSaveQuote}
+                onCloseBook={handleCloseBook}
+                onScrollUpdate={handleScrollUpdate}
+                initialProgress={readingState.progress[currentChapter.id] || 0}
+                theme={theme}
+                selectedLanguage={selectedLanguage}
+                onAppBarVisibilityChange={setShowAppBar}
+              />
+            )}
+          </div>
+          <div className="h-1 bg-stone-200/30 w-full absolute bottom-0 left-0 right-0 overflow-hidden">
+            <div className="h-full bg-amber-700 transition-all duration-700" style={{ width: `${progressPercent}%` }} />
+          </div>
         </div>
       </main>
     </div>

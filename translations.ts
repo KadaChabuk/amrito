@@ -17,7 +17,6 @@ interface Translation {
     noBookmarks: string;
     viewIndex: string;
     backToCover: string;
-    backToCover: string;
     loading: string;
     listen: string;
     preparingAudio: string;

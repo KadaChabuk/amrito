@@ -483,41 +483,76 @@ const Reader: React.FC<ReaderProps> = ({
         </div>
       </div>
 
-      {/* Floating Navigation Buttons - Simple & Clean */}
-      {!isFirst && (
-        <button
-          onClick={handlePrev}
-          className={`fixed top-1/2 left-4 md:left-8 -translate-y-1/2 z-30 p-2 transition-all duration-200 group
-            ${isDark ? 'text-stone-600 hover:text-amber-400' : 'text-stone-300 hover:text-amber-600'}
-          `}
-          aria-label="Previous Chapter"
-        >
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="transition-transform group-hover:-translate-x-1">
-            <path d="M15 18l-6-6 6-6" />
-          </svg>
-        </button>
-      )}
+      {/* Desktop Navigation Arrows - Closer to text */}
+      <div className="hidden md:flex absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[1000px] justify-between px-4 pointer-events-none z-30">
+        <div>
+          {!isFirst && (
+            <button
+              onClick={handlePrev}
+              className={`p-2 transition-all duration-200 group pointer-events-auto
+                ${isDark ? 'text-stone-600 hover:text-amber-400' : 'text-stone-300 hover:text-amber-600'}
+              `}
+              aria-label="Previous Chapter"
+            >
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="transition-transform group-hover:-translate-x-1">
+                <path d="M15 18l-6-6 6-6" />
+              </svg>
+            </button>
+          )}
+        </div>
+        <div>
+          {!isLast && (
+            <button
+              onClick={handleNext}
+              className={`p-2 transition-all duration-200 group pointer-events-auto
+                ${isDark ? 'text-stone-600 hover:text-amber-400' : 'text-stone-300 hover:text-amber-600'}
+              `}
+              aria-label="Next Chapter"
+            >
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="transition-transform group-hover:translate-x-1">
+                <path d="M9 18l6-6-6-6" />
+              </svg>
+            </button>
+          )}
+        </div>
+      </div>
 
-      {!isLast && (
-        <button
-          onClick={handleNext}
-          className={`fixed top-1/2 right-4 md:right-8 -translate-y-1/2 z-30 p-2 transition-all duration-200 group
-            ${isDark ? 'text-stone-600 hover:text-amber-400' : 'text-stone-300 hover:text-amber-600'}
-          `}
-          aria-label="Next Chapter"
-        >
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="transition-transform group-hover:translate-x-1">
-            <path d="M9 18l6-6-6-6" />
-          </svg>
-        </button>
-      )}
+      {/* Mobile Navigation Arrows - Fixed to sides */}
+      <div className="md:hidden">
+        {!isFirst && (
+          <button
+            onClick={handlePrev}
+            className={`fixed top-1/2 left-2 -translate-y-1/2 z-30 p-2
+              ${isDark ? 'text-stone-600' : 'text-stone-300'}
+            `}
+            aria-label="Previous Chapter"
+          >
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M15 18l-6-6 6-6" />
+            </svg>
+          </button>
+        )}
+        {!isLast && (
+          <button
+            onClick={handleNext}
+            className={`fixed top-1/2 right-2 -translate-y-1/2 z-30 p-2
+              ${isDark ? 'text-stone-600' : 'text-stone-300'}
+            `}
+            aria-label="Next Chapter"
+          >
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M9 18l6-6-6-6" />
+            </svg>
+          </button>
+        )}
+      </div>
 
       {isAnimating && animatingChapter && (
         <>
-          {/* Dynamic Under-page Shadow cast on the new content */}
-          <div className="under-page-shadow fixed inset-0 pointer-events-none"></div>
+          {/* Dynamic Under-page Shadow cast on the new content - Constrained to reader */}
+          <div className="under-page-shadow absolute inset-0 pointer-events-none"></div>
 
-          <div className="page-turn-overlay fixed inset-0 pointer-events-none z-50 book-perspective">
+          <div className="page-turn-overlay absolute inset-0 pointer-events-none z-50 book-perspective">
             <div
               className={`w-full h-full absolute inset-0 origin-left overflow-y-scroll
               ${animationDir === 'next' ? 'page-turn-next' : 'page-turn-prev'} 

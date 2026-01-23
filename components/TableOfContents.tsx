@@ -44,6 +44,17 @@ const TableOfContents: React.FC<TableOfContentsProps> = ({
   }, [activeChapterIndex, isSidebar, activeTab]);
 
   const isDark = theme.mode === 'dark';
+  const isSoft = theme.mode === 'soft';
+  const isSepia = theme.mode === 'sepia';
+
+  const themeColors = {
+    sepia: { bg: 'bg-[#fdfaf1]', text: 'text-amber-950', header: 'text-amber-900', border: 'border-amber-900/10', itemBg: 'bg-[#fdfaf1]', activeBg: 'bg-amber-100/50' },
+    light: { bg: 'bg-white', text: 'text-stone-900', header: 'text-stone-800', border: 'border-stone-100', itemBg: 'bg-white', activeBg: 'bg-stone-100' },
+    dark: { bg: 'bg-stone-900', text: 'text-stone-300', header: 'text-stone-100', border: 'border-stone-800', itemBg: 'bg-stone-900', activeBg: 'bg-stone-800/80', activeText: 'text-amber-400', muted: 'text-stone-500' },
+    soft: { bg: 'bg-[#f4ecd8]', text: 'text-stone-800', header: 'text-stone-900', border: 'border-orange-200/50', itemBg: 'bg-[#f4ecd8]', activeBg: 'bg-orange-100/50', activeText: 'text-amber-900', muted: 'text-stone-500' }
+  };
+
+  const currentTheme = themeColors[theme.mode] || themeColors.sepia;
   const t = getTranslation(selectedLanguage.code);
 
   const bookmarkedChapters = chapters.filter(ch => bookmarks.includes(ch.id));
@@ -62,16 +73,17 @@ const TableOfContents: React.FC<TableOfContentsProps> = ({
           {quotes.map(quote => (
             <div
               key={quote.id}
-              className="p-5 rounded-lg border border-amber-900/10 bg-[#fffdf9] shadow-sm relative group"
+              className={`p-5 rounded-lg border transition-all relative group shadow-sm
+                ${isDark ? 'bg-stone-800/40 border-stone-700' : isSoft ? 'bg-orange-100/30 border-orange-200/50' : 'bg-[#fffdf9] border-amber-900/10'}`}
             >
               <div className="flex justify-between items-start gap-4">
-                <p className="text-base font-book leading-relaxed italic text-stone-800">
+                <p className={`text-base font-book leading-relaxed italic ${isDark ? 'text-stone-300' : 'text-stone-800'}`}>
                   "{quote.text}"
                 </p>
                 {onRemoveQuote && (
                   <button
                     onClick={(e) => { e.stopPropagation(); onRemoveQuote(quote.id); }}
-                    className="opacity-0 group-hover:opacity-100 p-1 text-amber-900/40 hover:text-red-600 transition-opacity"
+                    className={`opacity-0 group-hover:opacity-100 p-1 transition-opacity ${isDark ? 'text-stone-500 hover:text-red-400' : 'text-amber-900/40 hover:text-red-600'}`}
                   >
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" /></svg>
                   </button>
@@ -80,7 +92,7 @@ const TableOfContents: React.FC<TableOfContentsProps> = ({
               <div className="mt-3 flex items-center gap-2">
                 <button
                   onClick={() => onGoToChapterById?.(quote.chapterId)}
-                  className="text-xs font-main hover:underline flex items-center gap-1.5 text-amber-700"
+                  className={`text-xs font-main hover:underline flex items-center gap-1.5 ${isDark ? 'text-amber-400/80' : 'text-amber-700'}`}
                 >
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" /><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" /></svg>
                   {quote.chapterTitle}
@@ -111,16 +123,16 @@ const TableOfContents: React.FC<TableOfContentsProps> = ({
               key={chapter.id}
               onClick={() => onSelect(globalIndex)}
               data-chapter-index={globalIndex}
-              className={`w-full text-left py-2 px-3 flex items-center gap-4 transition-all group rounded-lg border-b border-amber-900/5 last:border-0
+              className={`w-full text-left py-2 px-3 flex items-center gap-4 transition-all group rounded-lg border-b ${currentTheme.border} last:border-0
                 ${activeChapterIndex === globalIndex
-                  ? 'bg-amber-100/50 shadow-inner'
+                  ? currentTheme.activeBg + ' shadow-inner'
                   : 'hover:bg-amber-900/[0.04]'
                 }`}
             >
               <div className={`w-8 h-8 rounded-full border flex items-center justify-center transition-all font-book text-xs relative top-0.5
                 ${activeChapterIndex === globalIndex
                   ? 'bg-amber-600 text-white border-amber-600'
-                  : 'bg-[#fdfaf1] border-amber-900/10 group-hover:bg-amber-50 text-amber-900/60 font-medium'
+                  : `${currentTheme.itemBg} ${currentTheme.border} group-hover:bg-amber-50 text-amber-900/60 font-medium`
                 }`}>
                 {globalIndex + 1}
               </div>
@@ -128,8 +140,8 @@ const TableOfContents: React.FC<TableOfContentsProps> = ({
               <div className="flex-1 min-w-0">
                 <h3 className={`text-base md:text-lg font-book font-medium transition-colors leading-tight tracking-tight
                   ${activeChapterIndex === globalIndex
-                    ? 'text-amber-900 font-bold'
-                    : 'text-amber-950 group-hover:text-amber-800'
+                    ? (currentTheme.activeText || 'text-amber-900') + ' font-bold'
+                    : `${currentTheme.text} group-hover:text-amber-800`
                   }`}>
                   {chapter.title}
                 </h3>
@@ -159,7 +171,7 @@ const TableOfContents: React.FC<TableOfContentsProps> = ({
   };
 
   return (
-    <div className={`${isSidebar ? 'h-full' : 'fixed inset-0 z-50'} overflow-hidden bg-[#fdfaf1]`}>
+    <div className={`${isSidebar ? 'h-full' : 'fixed inset-0 z-50'} overflow-hidden ${currentTheme.bg}`}>
       {/* Background Texture */}
       {!isSidebar && (
         <>
@@ -169,35 +181,38 @@ const TableOfContents: React.FC<TableOfContentsProps> = ({
         </>
       )}
 
-      <div className={`h-full flex flex-col relative z-10 bg-[#fdfaf1] ${isSidebar ? 'w-full' : 'max-w-[500px] mx-auto shadow-[0_0_50px_rgba(0,0,0,0.1)] md:my-6 md:h-[calc(100%-3rem)] md:rounded-[3px] md:border md:border-stone-200'}`}>
+      <div className={`h-full flex flex-col relative z-10 ${currentTheme.bg} ${isSidebar ? 'w-full' : 'max-w-[500px] mx-auto shadow-[0_0_50px_rgba(0,0,0,0.1)] md:my-6 md:h-[calc(100%-3rem)] md:rounded-[3px] md:border ' + currentTheme.border}`}>
 
         <div className="pt-5 pb-2 px-6 text-center">
-          <div className="w-12 h-1 mx-auto bg-amber-900/20 rounded-full mb-3"></div>
+          <div className={`w-12 h-1 mx-auto rounded-full mb-3 ${isDark ? 'bg-stone-700' : 'bg-amber-900/20'}`}></div>
 
           {/* Gentle Book Title */}
           <div className="mb-1.5 space-y-0.5 opacity-90 animate-in fade-in slide-in-from-top-2 duration-700">
-            <p className="text-[9px] md:text-[10px] uppercase tracking-[0.25em] font-main text-amber-900/50 leading-none">{t.titlePrefix}</p>
-            <p className="text-xs md:text-sm font-book font-medium text-amber-900/70 leading-tight tracking-wide">{t.titleMain}</p>
+            <p className={`${selectedLanguage.code === 'en' ? 'text-[8px] md:text-[9px]' : 'text-[9px] md:text-[10px]'} uppercase tracking-[0.25em] font-main leading-none ${isDark ? 'text-stone-500' : 'text-amber-900/50'}`}>{t.titlePrefix}</p>
+            <p className={`${selectedLanguage.code === 'en' ? 'text-xs md:text-xs' : 'text-xs md:text-sm'} font-book font-medium leading-tight tracking-wide ${isDark ? 'text-stone-300' : 'text-amber-900/70'}`}>{t.titleMain}</p>
           </div>
 
-          <h2 className="text-3xl md:text-4xl font-bold font-cursive bg-gradient-to-b from-amber-700 to-amber-900 bg-clip-text text-transparent drop-shadow-sm mb-2 leading-relaxed py-1">{t.index}</h2>
+          <h2 className={`${selectedLanguage.code === 'en' ? 'text-2xl md:text-3xl' : 'text-3xl md:text-4xl'} font-bold font-cursive bg-clip-text text-transparent drop-shadow-sm mb-2 leading-relaxed py-1 ${isDark ? 'bg-gradient-to-b from-amber-200 to-amber-500' : 'bg-gradient-to-b from-amber-700 to-amber-900'}`}>{t.index}</h2>
 
           {/* Decorative Ornament instead of text */}
           <div className="flex items-center justify-center gap-4 mb-4">
-            <div className="h-px w-12 bg-gradient-to-r from-transparent to-amber-900/30"></div>
-            <div className="text-amber-900/40 transform rotate-45 scale-75">
+            <div className={`h-px w-12 bg-gradient-to-r from-transparent ${isDark ? 'to-amber-500/30' : 'to-amber-900/30'}`}></div>
+            <div className={`transform rotate-45 scale-75 ${isDark ? 'text-amber-500/50' : 'text-amber-900/40'}`}>
               <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M12 2L15 9H22L16 14L18 21L12 17L6 21L8 14L2 9H9L12 2Z" />
               </svg>
             </div>
-            <div className="h-px w-12 bg-gradient-to-l from-transparent to-amber-900/30"></div>
+            <div className={`h-px w-12 bg-gradient-to-l from-transparent ${isDark ? 'to-amber-500/30' : 'to-amber-900/30'}`}></div>
           </div>
 
 
           {/* Back to Cover - Prominent in both sidebars and mobile */}
           <button
             onClick={onBack}
-            className={`absolute top-4 left-4 p-2 rounded-xl border border-amber-900/20 text-amber-900/60 hover:bg-amber-900/5 hover:border-amber-900/40 hover:text-amber-900 transition-all active:scale-95 group flex items-center justify-center`}
+            className={`absolute top-4 left-4 p-2 rounded-xl border transition-all active:scale-95 group flex items-center justify-center
+              ${isDark
+                ? 'border-stone-700 text-stone-400 hover:bg-stone-800 hover:text-amber-400'
+                : 'border-amber-900/20 text-amber-900/60 hover:bg-amber-900/5 hover:border-amber-900/40 hover:text-amber-900'}`}
             title={t.backToCover}
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="group-hover:-translate-y-0.5 transition-transform duration-200">
@@ -218,10 +233,10 @@ const TableOfContents: React.FC<TableOfContentsProps> = ({
 
         {/* Tab Navigation */}
         <div className="px-6 mb-6">
-          <div className="flex p-1 bg-amber-900/5 rounded-lg border border-amber-900/10">
-            <button onClick={() => setActiveTab('all')} className={`flex-1 py-2 text-xs md:text-sm font-book rounded-md transition-all ${activeTab === 'all' ? 'bg-white shadow-sm text-amber-900 font-bold' : 'text-amber-900/60 hover:text-amber-800'}`}>{t.allChapters}</button>
-            <button onClick={() => setActiveTab('bookmarks')} className={`flex-1 py-2 text-xs md:text-sm font-book rounded-md transition-all ${activeTab === 'bookmarks' ? 'bg-white shadow-sm text-amber-900 font-bold' : 'text-amber-900/60 hover:text-amber-800'}`}>{t.bookmarks} ({bookmarks.length})</button>
-            <button onClick={() => setActiveTab('quotes')} className={`flex-1 py-2 text-xs md:text-sm font-book rounded-md transition-all ${activeTab === 'quotes' ? 'bg-white shadow-sm text-amber-900 font-bold' : 'text-amber-900/60 hover:text-amber-800'}`}>{t.quotes} ({quotes.length})</button>
+          <div className={`flex p-1 rounded-lg border ${isDark ? 'bg-stone-800/50 border-stone-700' : 'bg-amber-900/5 border-amber-900/10'}`}>
+            <button onClick={() => setActiveTab('all')} className={`flex-1 py-1.5 text-xs md:text-sm font-book rounded-md transition-all ${activeTab === 'all' ? (isDark ? 'bg-stone-700 shadow-sm text-stone-100 font-bold' : 'bg-white shadow-sm text-amber-900 font-bold') : (isDark ? 'text-stone-500 hover:text-stone-300' : 'text-amber-900/60 hover:text-amber-800')}`}>{t.allChapters}</button>
+            <button onClick={() => setActiveTab('bookmarks')} className={`flex-1 py-1.5 text-xs md:text-sm font-book rounded-md transition-all ${activeTab === 'bookmarks' ? (isDark ? 'bg-stone-700 shadow-sm text-stone-100 font-bold' : 'bg-white shadow-sm text-amber-900 font-bold') : (isDark ? 'text-stone-500 hover:text-stone-300' : 'text-amber-900/60 hover:text-amber-800')}`}>{t.bookmarks} ({bookmarks.length})</button>
+            <button onClick={() => setActiveTab('quotes')} className={`flex-1 py-1.5 text-xs md:text-sm font-book rounded-md transition-all ${activeTab === 'quotes' ? (isDark ? 'bg-stone-700 shadow-sm text-stone-100 font-bold' : 'bg-white shadow-sm text-amber-900 font-bold') : (isDark ? 'text-stone-500 hover:text-stone-300' : 'text-amber-900/60 hover:text-amber-800')}`}>{t.quotes} ({quotes.length})</button>
           </div>
         </div>
 

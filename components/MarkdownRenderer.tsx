@@ -4,7 +4,7 @@ import React from 'react';
 interface MarkdownRendererProps {
   content: string;
   fontSize: number;
-  themeMode: 'sepia' | 'light' | 'dark';
+  themeMode: 'sepia' | 'light' | 'dark' | 'soft';
 }
 
 const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content, fontSize, themeMode }) => {
@@ -132,7 +132,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content, fontSize, 
     <div
       style={{ fontSize: `${fontSize}px`, fontFamily: "'Tiro Bangla', serif" }}
       className={`prose max-w-none tracking-normal text-left selection:bg-amber-200
-        ${themeMode === 'dark' ? 'prose-invert text-slate-300' : 'text-slate-900'}
+        ${themeMode === 'dark' ? 'prose-invert text-slate-300' : themeMode === 'soft' ? 'text-stone-800' : 'text-slate-900'}
       `}
     >
       {/* Main Body Content */}
@@ -146,9 +146,11 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content, fontSize, 
           className={`mt-16 p-6 md:p-10 rounded-3xl border border-dashed relative transition-all duration-500 shadow-inner
             ${themeMode === 'dark'
               ? 'bg-[#121416] border-slate-800 text-slate-400'
-              : themeMode === 'sepia'
-                ? 'bg-[#f4ebd0] border-amber-300/50 text-stone-700'
-                : 'bg-stone-50 border-stone-200 text-stone-600'
+              : themeMode === 'soft'
+                ? 'bg-[#ecdfc1] border-orange-200/50 text-stone-700'
+                : themeMode === 'sepia'
+                  ? 'bg-[#f4ebd0] border-amber-300/50 text-stone-700'
+                  : 'bg-stone-50 border-stone-200 text-stone-600'
             }`}
           style={{ fontSize: `${fontSize * 0.75}px`, lineHeight: '1.6' }}
         >

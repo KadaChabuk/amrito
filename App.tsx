@@ -240,7 +240,8 @@ const App: React.FC = () => {
   const t = getTranslation(selectedLanguage.code);
 
   return (
-    <div className={`h-screen flex flex-col overflow-hidden font-['Hind_Siliguri'] selection:bg-amber-200 reader-fade-in ${isDark ? 'bg-[#1a1c1e]' : 'bg-stone-50'}`}>
+    <div className={`h-screen flex flex-col overflow-hidden font-['Hind_Siliguri'] selection:bg-amber-200 reader-fade-in 
+      ${theme.mode === 'dark' ? 'bg-[#1a1c1e]' : theme.mode === 'soft' ? 'bg-[#f4ecd8]' : 'bg-stone-50'}`}>
 
       {/* Mobile AppBar - Auto-hide on scroll */}
       <div className={`md:hidden flex items-center justify-between px-3 h-16 border-b z-30 shadow-sm backdrop-blur-md fixed top-0 left-0 right-0 transition-transform duration-300
@@ -307,6 +308,8 @@ const App: React.FC = () => {
                 theme={theme}
                 selectedLanguage={selectedLanguage}
                 onAppBarVisibilityChange={setShowAppBar}
+                onFontSizeChange={(size) => setTheme({ ...theme, fontSize: size })}
+                onThemeChange={(mode) => setTheme({ ...theme, mode })}
               />
             )}
           </div>

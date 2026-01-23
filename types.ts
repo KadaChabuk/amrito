@@ -24,7 +24,7 @@ export interface ReadingState {
 }
 
 export interface Theme {
-  mode: 'sepia' | 'light' | 'dark';
+  mode: 'sepia' | 'light' | 'dark' | 'soft';
   fontSize: number;
   rememberScroll?: boolean;
 }

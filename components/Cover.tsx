@@ -91,7 +91,7 @@ const Cover: React.FC<CoverProps> = ({ onOpen, selectedLanguage, onLanguageChang
                 <div className="hidden md:block absolute right-4 w-8 h-px bg-gradient-to-l from-transparent to-amber-700/50"></div>
 
                 <h1 className={`font-cursive font-bold text-[#eecfa1] leading-[1.1] text-center drop-shadow-md w-full`}
-                  style={{ fontSize: 'clamp(2rem, 8vw, 3.5rem)' }}>
+                  style={{ fontSize: selectedLanguage.code === 'en' ? 'clamp(1.5rem, 6vw, 2.8rem)' : 'clamp(2rem, 8vw, 3.5rem)' }}>
                   {t.titleMain}
                 </h1>
               </div>

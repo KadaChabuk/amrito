@@ -20,6 +20,8 @@ interface ReaderProps {
   theme: Theme;
   selectedLanguage: Language;
   onAppBarVisibilityChange?: (visible: boolean) => void;
+  onFontSizeChange?: (size: number) => void;
+  onThemeChange?: (mode: Theme['mode']) => void;
 }
 
 interface SelectionState {
@@ -45,7 +47,9 @@ const Reader: React.FC<ReaderProps> = ({
   initialProgress = 0,
   theme,
   selectedLanguage,
-  onAppBarVisibilityChange
+  onAppBarVisibilityChange,
+  onFontSizeChange,
+  onThemeChange
 }) => {
   const readerRef = useRef<HTMLDivElement>(null);
   const audioCtxRef = useRef<AudioContext | null>(null);
@@ -57,7 +61,16 @@ const Reader: React.FC<ReaderProps> = ({
   const [toast, setToast] = useState<string | null>(null);
   const [ttsStatus, setTtsStatus] = useState<TtsStatus>('stopped');
 
-  // Animation state
+  const isDark = theme.mode === 'dark';
+
+  const themeColors = {
+    sepia: { bg: 'bg-[#fffdfa]', text: 'text-stone-900', border: 'border-stone-200/50' },
+    light: { bg: 'bg-white', text: 'text-stone-900', border: 'border-stone-100' },
+    dark: { bg: 'bg-stone-900', text: 'text-stone-100', border: 'border-stone-800/50' },
+    soft: { bg: 'bg-[#f4ecd8]', text: 'text-stone-800', border: 'border-orange-200/50' }
+  };
+
+  const currentTheme = themeColors[theme.mode] || themeColors.sepia;
   const [isAnimating, setIsAnimating] = useState(false);
   const [animatingChapter, setAnimatingChapter] = useState<Chapter | null>(null);
   const [animatingScrollTop, setAnimatingScrollTop] = useState(0);
@@ -65,6 +78,22 @@ const Reader: React.FC<ReaderProps> = ({
   const lastScrollTop = useRef(0);
 
   const [resumePosition, setResumePosition] = useState<number | null>(null);
+  const [showFontMenu, setShowFontMenu] = useState(false);
+  const [showThemeMenu, setShowThemeMenu] = useState(false);
+
+  const adjustFontSize = (delta: number) => {
+    if (onFontSizeChange) {
+      const newSize = Math.max(12, Math.min(48, theme.fontSize + delta));
+      onFontSizeChange(newSize);
+    }
+  };
+
+  const changeTheme = (mode: Theme['mode']) => {
+    if (onThemeChange) {
+      onThemeChange(mode);
+      setShowThemeMenu(false);
+    }
+  };
 
   useEffect(() => {
     if (readerRef.current) {
@@ -99,8 +128,6 @@ const Reader: React.FC<ReaderProps> = ({
   };
 
   const t = getTranslation(selectedLanguage.code);
-
-  const isDark = theme.mode === 'dark';
 
   const triggerHaptic = (duration: number = 10) => {
     if ('vibrate' in navigator) {
@@ -389,7 +416,7 @@ const Reader: React.FC<ReaderProps> = ({
   }, [toast]);
 
   return (
-    <div className={`relative h-full flex flex-col ${isDark ? 'bg-stone-900 text-stone-100' : 'bg-[#fffdfa] text-stone-900'}`}>
+    <div className={`relative h-full flex flex-col ${currentTheme.bg} ${currentTheme.text}`}>
       {toast && (
         <div className="fixed top-20 left-1/2 -translate-x-1/2 z-[100] px-4 py-2 bg-amber-800 text-amber-50 rounded-full shadow-lg text-sm font-main animate-in fade-in slide-in-from-top-4 duration-300">
           {toast}
@@ -465,7 +492,7 @@ const Reader: React.FC<ReaderProps> = ({
               <span className={`text-sm md:text-base font-book tracking-[0.2em] uppercase ${isDark ? 'text-amber-500/60' : 'text-amber-800/60'}`}>{t.chapter} {chapter.index + 1}</span>
               <span className={`h-px w-8 md:w-12 ${isDark ? 'bg-stone-800' : 'bg-stone-200'}`}></span>
             </div>
-            <h1 className={`text-4xl md:text-5xl lg:text-6xl font-book leading-tight mb-6 ${isDark ? 'text-stone-100' : 'text-stone-900'} filter drop-shadow-sm`}>
+            <h1 className={`${selectedLanguage.code === 'en' ? 'text-3xl md:text-4xl lg:text-5xl' : 'text-4xl md:text-5xl lg:text-6xl'} font-book leading-tight mb-6 ${isDark ? 'text-stone-100' : 'text-stone-900'} filter drop-shadow-sm`}>
               {chapter.title}
             </h1>
             {chapter.writer && (
@@ -567,7 +594,7 @@ const Reader: React.FC<ReaderProps> = ({
                     <span className={`text-sm md:text-base font-book tracking-[0.2em] uppercase ${isDark ? 'text-amber-500/60' : 'text-amber-800/60'}`}>{t.chapter} {animatingChapter.index + 1}</span>
                     <span className={`h-px w-8 md:w-12 ${isDark ? 'bg-stone-800' : 'bg-stone-200'}`}></span>
                   </div>
-                  <h1 className={`text-4xl md:text-5xl lg:text-6xl font-book leading-tight mb-6 ${isDark ? 'text-stone-100' : 'text-stone-900'} filter drop-shadow-sm`}>
+                  <h1 className={`${selectedLanguage.code === 'en' ? 'text-3xl md:text-4xl lg:text-5xl' : 'text-4xl md:text-5xl lg:text-6xl'} font-book leading-tight mb-6 ${isDark ? 'text-stone-100' : 'text-stone-900'} filter drop-shadow-sm`}>
                     {animatingChapter.title}
                   </h1>
                   {animatingChapter.writer && (
@@ -589,6 +616,89 @@ const Reader: React.FC<ReaderProps> = ({
           </div>
         </>
       )}
+
+      {/* Reader Controls - Grouped for better UX */}
+      <div className={`fixed bottom-24 right-6 md:right-12 z-30 flex flex-col items-center gap-4 transition-all duration-500`}>
+
+        {/* Theme Menu */}
+        {showThemeMenu && (
+          <div className={`flex flex-col gap-3 p-3 rounded-2xl shadow-2xl border animate-in fade-in zoom-in-90 slide-in-from-bottom-4 duration-300
+            ${isDark ? 'bg-stone-800 border-stone-700' : 'bg-white/95 backdrop-blur-sm border-stone-200'}
+          `}>
+            {(['sepia', 'light', 'soft', 'dark'] as const).map((mode) => (
+              <button
+                key={mode}
+                onClick={() => changeTheme(mode)}
+                className={`w-8 h-8 rounded-full border-2 transition-all active:scale-90 hover:scale-110 shadow-sm
+                  ${theme.mode === mode ? 'border-amber-500 scale-110 ring-2 ring-amber-500/20' : 'border-transparent'}
+                  ${mode === 'sepia' ? 'bg-[#fffdfa]' : mode === 'light' ? 'bg-white' : mode === 'soft' ? 'bg-[#f4ecd8]' : 'bg-stone-900'}
+                `}
+                title={mode.charAt(0).toUpperCase() + mode.slice(1)}
+              />
+            ))}
+          </div>
+        )}
+
+        {/* Font Menu */}
+        {showFontMenu && (
+          <div className={`flex flex-col gap-2 p-2 rounded-2xl shadow-2xl border animate-in fade-in zoom-in-90 slide-in-from-bottom-4 duration-300
+            ${isDark ? 'bg-stone-800 border-stone-700' : 'bg-white/95 backdrop-blur-sm border-stone-200'}
+          `}>
+            <button
+              onClick={() => adjustFontSize(2)}
+              className={`p-2 rounded-xl transition-all active:scale-90 ${isDark ? 'hover:bg-stone-700 text-amber-400' : 'hover:bg-stone-100 text-amber-900'}`}
+              aria-label="Increase Font Size"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 5v14M5 12h14" /></svg>
+            </button>
+            <div className={`h-px w-6 mx-auto ${isDark ? 'bg-white/10' : 'bg-amber-900/10'}`}></div>
+            <button
+              onClick={() => adjustFontSize(-2)}
+              className={`p-2 rounded-xl transition-all active:scale-90 ${isDark ? 'hover:bg-stone-700 text-amber-400' : 'hover:bg-stone-100 text-amber-900'}`}
+              aria-label="Decrease Font Size"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M5 12h14" /></svg>
+            </button>
+          </div>
+        )}
+
+        <div className="flex flex-col gap-3">
+          {/* Theme Toggle Button */}
+          <button
+            onClick={() => { setShowThemeMenu(!showThemeMenu); setShowFontMenu(false); }}
+            className={`w-12 h-12 rounded-full shadow-lg transition-all duration-300 transform border flex items-center justify-center
+              ${showThemeMenu ? 'scale-110 border-amber-500 shadow-amber-900/20' : ''}
+              ${isDark ? 'bg-stone-800 border-stone-700' : 'bg-white border-stone-200'}
+            `}
+            aria-label="Theme Settings"
+          >
+            <div className="relative">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={isDark ? 'text-amber-400' : 'text-stone-600'}>
+                <path d="M12 21a9 9 0 1 1 0-18c4.97 0 9 3.582 9 8 0 1.06-.474 2.078-1.318 2.828-.844.75-1.989 1.172-3.182 1.172h-2.5c-.552 0-1 .448-1 1s.448 1 1 1 .5 1.5.5 2a2 2 0 0 1-2 2z" />
+                <circle cx="7.5" cy="10.5" r=".5" />
+                <circle cx="10.5" cy="7.5" r=".5" />
+                <circle cx="13.5" cy="7.5" r=".5" />
+                <circle cx="16.5" cy="10.5" r=".5" />
+              </svg>
+              <div className={`absolute -bottom-1 -right-1 w-3 h-3 rounded-full border-2 border-white dark:border-stone-800 shadow-sm
+                ${theme.mode === 'sepia' ? 'bg-[#fffdfa]' : theme.mode === 'light' ? 'bg-white' : theme.mode === 'soft' ? 'bg-[#f4ecd8]' : 'bg-stone-900'}
+              `} />
+            </div>
+          </button>
+
+          {/* Font Toggle Button */}
+          <button
+            onClick={() => { setShowFontMenu(!showFontMenu); setShowThemeMenu(false); }}
+            className={`w-12 h-12 rounded-full shadow-lg transition-all duration-300 transform border font-main font-bold flex items-center justify-center
+              ${showFontMenu ? 'scale-110 border-amber-500 shadow-amber-900/20' : ''}
+              ${isDark ? 'bg-stone-800 border-stone-700 text-amber-400' : 'bg-white border-stone-200 text-stone-600'}
+            `}
+            aria-label="Font Settings"
+          >
+            Aa
+          </button>
+        </div>
+      </div>
 
       <button onClick={handleScrollToTop} className={`fixed bottom-8 right-6 md:right-12 p-3 rounded-full shadow-lg transition-all duration-300 transform z-30 border ${showScrollTop ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'} ${isDark ? 'bg-stone-800 border-stone-700 text-amber-400' : 'bg-white border-stone-200 text-stone-600'}`} aria-label="Back to top"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M18 15l-6-6-6 6" /></svg></button>
 

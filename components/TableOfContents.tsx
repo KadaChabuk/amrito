@@ -183,26 +183,22 @@ const TableOfContents: React.FC<TableOfContentsProps> = ({
 
       <div className={`h-full flex flex-col relative z-10 ${currentTheme.bg} ${isSidebar ? 'w-full' : 'max-w-[500px] mx-auto shadow-[0_0_50px_rgba(0,0,0,0.1)] md:my-6 md:h-[calc(100%-3rem)] md:rounded-[3px] md:border ' + currentTheme.border}`}>
 
-        <div className="pt-5 pb-2 px-6 text-center">
-          <div className={`w-12 h-1 mx-auto rounded-full mb-3 ${isDark ? 'bg-stone-700' : 'bg-amber-900/20'}`}></div>
+        <div className="pt-6 pb-2 px-6 text-center">
+          <div className={`w-12 h-1 mx-auto rounded-full mb-4 ${isDark ? 'bg-stone-700' : 'bg-amber-900/10'}`}></div>
 
-          {/* Gentle Book Title */}
-          <div className="mb-1.5 space-y-0.5 opacity-90 animate-in fade-in slide-in-from-top-2 duration-700">
-            <p className={`${selectedLanguage.code === 'en' ? 'text-[8px] md:text-[9px]' : 'text-[9px] md:text-[10px]'} uppercase tracking-[0.25em] font-main leading-none ${isDark ? 'text-stone-500' : 'text-amber-900/50'}`}>{t.titlePrefix}</p>
-            <p className={`${selectedLanguage.code === 'en' ? 'text-xs md:text-xs' : 'text-xs md:text-sm'} font-book font-medium leading-tight tracking-wide ${isDark ? 'text-stone-300' : 'text-amber-900/70'}`}>{t.titleMain}</p>
+          {/* Prominent Book Title */}
+          <div className="mb-4 space-y-1 animate-in fade-in slide-in-from-top-2 duration-700">
+            <p className={`${selectedLanguage.code === 'en' ? 'text-[10px] md:text-[11px]' : 'text-[11px] md:text-[12px]'} uppercase tracking-[0.3em] font-main font-medium leading-none ${isDark ? 'text-amber-500/70' : 'text-amber-900/60'}`}>{t.titlePrefix}</p>
+            <h1 className={`${selectedLanguage.code === 'en' ? 'text-2xl md:text-3xl' : 'text-3xl md:text-4xl'} font-book font-bold leading-tight tracking-tight drop-shadow-sm transition-all duration-500 ${isDark ? 'text-stone-100' : 'text-amber-950'}`}>
+              {t.titleMain}
+            </h1>
           </div>
 
-          <h2 className={`${selectedLanguage.code === 'en' ? 'text-2xl md:text-3xl' : 'text-3xl md:text-4xl'} font-bold font-cursive bg-clip-text text-transparent drop-shadow-sm mb-2 leading-relaxed py-1 ${isDark ? 'bg-gradient-to-b from-amber-200 to-amber-500' : 'bg-gradient-to-b from-amber-700 to-amber-900'}`}>{t.index}</h2>
-
-          {/* Decorative Ornament instead of text */}
-          <div className="flex items-center justify-center gap-4 mb-4">
-            <div className={`h-px w-12 bg-gradient-to-r from-transparent ${isDark ? 'to-amber-500/30' : 'to-amber-900/30'}`}></div>
-            <div className={`transform rotate-45 scale-75 ${isDark ? 'text-amber-500/50' : 'text-amber-900/40'}`}>
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 2L15 9H22L16 14L18 21L12 17L6 21L8 14L2 9H9L12 2Z" />
-              </svg>
-            </div>
-            <div className={`h-px w-12 bg-gradient-to-l from-transparent ${isDark ? 'to-amber-500/30' : 'to-amber-900/30'}`}></div>
+          {/* Refined Index Label - Less dominant but elegant */}
+          <div className="flex items-center justify-center gap-3 mb-4 opacity-80">
+            <div className={`h-px flex-1 bg-gradient-to-r from-transparent ${isDark ? 'to-amber-500/20' : 'to-amber-900/20'}`}></div>
+            <h2 className={`${selectedLanguage.code === 'en' ? 'text-sm md:text-base' : 'text-base md:text-lg'} font-bold font-cursive tracking-widest uppercase ${isDark ? 'text-amber-400' : 'text-amber-800'}`}>{t.index}</h2>
+            <div className={`h-px flex-1 bg-gradient-to-l from-transparent ${isDark ? 'to-amber-500/20' : 'to-amber-900/20'}`}></div>
           </div>
 
 
